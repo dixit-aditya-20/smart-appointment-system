@@ -1,0 +1,107 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: #333;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    color: white;
+}
+
+.navbar h1 {
+    font-size: 24px;
+}
+
+.navbar a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.navbar a:hover {
+    color: #ffe600;
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    text-align: center;
+    color: white;
+}
+
+.hero h2 {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Button */
+.btn {
+    padding: 12px 25px;
+    border: none;
+    background: #fff;
+    color: #333;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #333;
+    color: white;
+}
+
+/* Features Section */
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+}
+
+/* Cards (Glass Effect) */
+.card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    width: 250px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    transition: 0.3s;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+/* Test Section */
+.test {
+    text-align: center;
+    padding: 40px;
+    color: white;
+    font-size: 18px;
+}
