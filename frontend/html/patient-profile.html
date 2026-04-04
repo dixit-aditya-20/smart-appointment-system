@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Profile - Lifeline Health AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #1aa6a6, #0d6e6e);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .patient-avatar {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 50px;
+        }
+
+        .patient-name {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .profile-content {
+            padding: 40px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .info-card h3 {
+            color: #1aa6a6;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e0f2f1;
+            padding-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-value {
+            color: #2c3e44;
+        }
+
+        .medical-history-item {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #1aa6a6;
+        }
+
+        .vital-signs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .vital-card {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .vital-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1aa6a6;
+        }
+
+        .vital-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .toast.error {
+            background: #e74c3c;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .profile-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="patient-avatar">
+            👤
+        </div>
+        <h1 class="patient-name" id="patientName">Loading...</h1>
+        <p id="patientEmail"></p>
+    </div>
+
+    <div class="profile-content">
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>📋 Personal Information</h3>
+                <div class="info-row">
+                    <span class="info-label">Full Name:</span>
+                    <span class="info-value" id="fullName"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date of Birth:</span>
+                    <span class="info-value" id="dob"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Age:</span>
+                    <span class="info-value" id="age"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Gender:</span>
+                    <span class="info-value" id="gender"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Blood Group:</span>
+                    <span class="info-value" id="bloodGroup"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phone:</span>
+                    <span class="info-value" id="phone"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Emergency Contact:</span>
+                    <span class="info-value" id="emergencyContact"></span>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>📏 Physical Measurements</h3>
+                <div class="info-row">
+                    <span class="info-label">Height:</span>
+                    <span class="info-value" id="height"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Weight:</span>
+                    <span class="info-value" id="weight"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">BMI:</span>
+                    <span class="info-value" id="bmi"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>🩺 Vital Signs</h3>
+                <div class="vital-signs">
+                    <div class="vital-card">
+                        <div class="vital-value" id="bloodPressure">--/--</div>
+                        <div class="vital-label">Blood Pressure</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="vital-value" id="heartRate">--</div>
+                        <div class="vital-label">Heart Rate (bpm)</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="vital-value" id="temperature">--</div>
+                        <div class="vital-label">Temperature (°F)</div>
+                    </div>
+                    <div class="vital-card">
+                        <div class="vital-value" id="bloodSugar">--</div>
+                        <div class="vital-label">Blood Sugar (mg/dL)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>⚠️ Allergies</h3>
+                <div id="allergiesList"></div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>💊 Current Medications</h3>
+            <div id="medicationsList"></div>
+        </div>
+
+        <div class="info-card">
+            <h3>📜 Medical History</h3>
+            <div id="medicalHistoryList"></div>
+        </div>
+
+        <button class="back-btn" onclick="goBack()">← Back to Dashboard</button>
+    </div>
+</div>
+
+<script type="module">
+import { auth, db, getPatientProfile } from "../js/firebase.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let toastTimeout = null;
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toast.classList.remove('show');
+    toast.textContent = message;
+    toast.className = 'toast';
+    toast.classList.add(type);
+    setTimeout(() => toast.classList.add('show'), 10);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function calculateAge(dob) {
+    if (!dob) return 'Not specified';
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+
+function calculateBMI(weight, height) {
+    if (!weight || !height) return '--';
+    const heightInMeters = height / 100;
+    const bmi = weight / (heightInMeters * heightInMeters);
+    return bmi.toFixed(1);
+}
+
+async function loadPatientProfile() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const patientId = urlParams.get('patientId');
+    
+    if (!patientId) {
+        showToast("Patient information not found", "error");
+        return;
+    }
+    
+    try {
+        const patient = await getPatientProfile(patientId);
+        
+        if (!patient) {
+            showToast("Patient not found", "error");
+            return;
+        }
+        
+        document.getElementById('patientName').textContent = patient.name || 'Patient';
+        document.getElementById('patientEmail').textContent = patient.email || '';
+        document.getElementById('fullName').textContent = patient.name || 'Not specified';
+        document.getElementById('dob').textContent = patient.dob || 'Not specified';
+        document.getElementById('age').textContent = patient.dob ? calculateAge(patient.dob) + ' years' : 'Not specified';
+        document.getElementById('gender').textContent = patient.gender || 'Not specified';
+        document.getElementById('bloodGroup').textContent = patient.bloodGroup || 'Not specified';
+        document.getElementById('phone').textContent = patient.phone || 'Not specified';
+        document.getElementById('emergencyContact').textContent = patient.emergencyContact || 'Not specified';
+        
+        const height = patient.height || '--';
+        const weight = patient.weight || '--';
+        document.getElementById('height').textContent = height !== '--' ? `${height} cm` : 'Not specified';
+        document.getElementById('weight').textContent = weight !== '--' ? `${weight} kg` : 'Not specified';
+        document.getElementById('bmi').textContent = calculateBMI(weight, height);
+        
+        document.getElementById('bloodPressure').textContent = patient.bloodPressure || '--/--';
+        document.getElementById('heartRate').textContent = patient.heartRate || '--';
+        document.getElementById('temperature').textContent = patient.temperature || '--';
+        document.getElementById('bloodSugar').textContent = patient.bloodSugar || '--';
+        
+        const allergiesContainer = document.getElementById('allergiesList');
+        if (patient.allergies && patient.allergies.length > 0) {
+            allergiesContainer.innerHTML = patient.allergies.map(allergy => 
+                `<div class="medical-history-item">⚠️ ${escapeHtml(allergy)}</div>`
+            ).join('');
+        } else {
+            allergiesContainer.innerHTML = '<p>No known allergies</p>';
+        }
+        
+        const medicationsContainer = document.getElementById('medicationsList');
+        if (patient.medications && patient.medications.length > 0) {
+            medicationsContainer.innerHTML = patient.medications.map(med => 
+                `<div class="medical-history-item">💊 ${escapeHtml(med.name)} - ${med.dosage} (${med.frequency})</div>`
+            ).join('');
+        } else {
+            medicationsContainer.innerHTML = '<p>No current medications</p>';
+        }
+        
+        const medicalHistoryContainer = document.getElementById('medicalHistoryList');
+        if (patient.medicalHistory && patient.medicalHistory.length > 0) {
+            medicalHistoryContainer.innerHTML = patient.medicalHistory.map(record => 
+                `<div class="medical-history-item">
+                    <strong>${record.condition || 'Condition'}</strong><br>
+                    <small>Diagnosed: ${record.diagnosedDate || 'Unknown'} | Status: ${record.status || 'Active'}</small>
+                </div>`
+            ).join('');
+        } else {
+            medicalHistoryContainer.innerHTML = '<p>No medical history recorded</p>';
+        }
+        
+    } catch (error) {
+        console.error("Error loading patient profile:", error);
+        showToast("Error loading profile", "error");
+    }
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+window.goBack = () => {
+    window.location.href = "doctor.html";
+};
+
+loadPatientProfile();
+</script>
+</body>
+</html>

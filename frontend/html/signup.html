@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lifeline AI · Join the Future of Healthcare</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+
+        /* Main container */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 48px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .main-container:hover {
+            transform: scale(1.01);
+        }
+
+        /* Image Section */
+        .image-section {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-section::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1%, transparent 1%);
+            background-size: 50px 50px;
+            animation: shimmer 20s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .image-section img {
+            max-width: 100%;
+            height: auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        }
+
+        /* Form Section */
+        .form-section {
+            flex: 1;
+            padding: 60px 48px;
+            background: white;
+            max-height: 90vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .form-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-section::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .form-section::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .form-box {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .form-section h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 32px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Role Selection */
+        .role-selection {
+            margin-bottom: 28px;
+        }
+
+        .role-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 12px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #4a5568;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .role-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .role-btn.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Input Groups */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            background: #f7fafc;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .input-group:focus-within {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-group span {
+            padding: 0 16px;
+            font-size: 20px;
+            opacity: 0.6;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            flex: 1;
+            padding: 16px 16px 16px 0;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+            font-weight: 500;
+            color: #2d3748;
+            font-family: inherit;
+        }
+
+        .input-group select {
+            cursor: pointer;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .input-group input::placeholder,
+        .input-group textarea::placeholder {
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .toggle-eye {
+            position: absolute;
+            right: 16px;
+            cursor: pointer;
+            font-size: 20px;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+            background: transparent;
+            padding: 8px;
+        }
+
+        .toggle-eye:hover {
+            opacity: 1;
+        }
+
+        /* Doctor Fields */
+        .doctor-fields {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .doctor-fields.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button[type="submit"]:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -10px rgba(102, 126, 234, 0.5);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        /* Login Link */
+        .login-link {
+            text-align: center;
+            margin-top: 28px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .login-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .login-link a:hover::after {
+            width: 100%;
+        }
+
+        /* Toast Notification - FIXED */
+        .toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            transform: translateX(400px);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+            padding: 16px 24px;
+            min-width: 320px;
+            max-width: 400px;
+            z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .toast-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .toast-content strong {
+            display: block;
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .toast-content p {
+            font-size: 14px;
+            color: #718096;
+            margin: 0;
+        }
+
+        /* Loading animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .main-container {
+                flex-direction: column;
+                max-width: 550px;
+            }
+            
+            .image-section {
+                padding: 30px;
+                min-height: 200px;
+            }
+            
+            .image-section img {
+                max-width: 80%;
+            }
+
+            .form-section {
+                padding: 40px 24px;
+                max-height: 70vh;
+            }
+
+            .form-section h2 {
+                font-size: 28px;
+                margin-bottom: 24px;
+            }
+
+            .toast {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .form-section {
+                padding: 30px 20px;
+            }
+
+            .role-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .extra-links {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .input-group span {
+                padding: 0 12px;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-box > * {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .logo { animation-delay: 0.1s; }
+        h2 { animation-delay: 0.2s; }
+        .role-selection { animation-delay: 0.3s; }
+        .input-group:nth-child(1) { animation-delay: 0.4s; }
+        .input-group:nth-child(2) { animation-delay: 0.5s; }
+        .input-group:nth-child(3) { animation-delay: 0.6s; }
+        .input-group:nth-child(4) { animation-delay: 0.7s; }
+        .doctor-fields { animation-delay: 0.8s; }
+        button[type="submit"] { animation-delay: 0.9s; }
+        .login-link { animation-delay: 1s; }
+    </style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div id="toast" class="toast">
+    <div class="toast-content">
+        <span class="toast-icon">✓</span>
+        <div>
+            <strong>Notification</strong>
+            <p id="toastMsg">Message</p>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="image-section">
+        <img src="/Assets/images/signup/signup-side-removebg-preview.png" alt="Healthcare Illustration">
+    </div>
+
+    <div class="form-section">
+        <div class="form-box">
+            <div class="logo">⚕️ Lifeline AI</div>
+            <h2>Create Account</h2>
+
+            <div class="role-selection">
+                <span class="role-title">I am signing up as</span>
+                <div class="role-buttons">
+                    <button type="button" class="role-btn active" data-role="patient" onclick="selectRole('patient')">
+                        👤 Patient
+                    </button>
+                    <button type="button" class="role-btn" data-role="doctor" onclick="selectRole('doctor')">
+                        👨‍⚕️ Doctor
+                    </button>
+                </div>
+            </div>
+
+            <form id="signupForm">
+                <div class="input-group">
+                    <span>👤</span>
+                    <input type="text" id="name" placeholder="Full name" required autocomplete="name">
+                </div>
+
+                <div class="input-group">
+                    <span>📧</span>
+                    <input type="email" id="email" placeholder="Email address" required autocomplete="email">
+                </div>
+
+                <div class="input-group password-group">
+                    <span>🔒</span>
+                    <input type="password" id="password" placeholder="Password" required autocomplete="new-password">
+                    <i class="toggle-eye" onclick="togglePassword('password', this)">👁️</i>
+                </div>
+
+                <div class="input-group password-group">
+                    <span>🔒</span>
+                    <input type="password" id="confirmPassword" placeholder="Confirm password" required autocomplete="off">
+                    <i class="toggle-eye" onclick="togglePassword('confirmPassword', this)">👁️</i>
+                </div>
+
+                <!-- Doctor Specific Fields -->
+                <div id="doctorFields" class="doctor-fields">
+                    <div class="input-group">
+                        <span>🩺</span>
+                        <input type="text" id="specialization" placeholder="Specialization (e.g., Cardiologist, Neurologist)">
+                    </div>
+
+                    <div class="input-group">
+                        <span>📜</span>
+                        <input type="text" id="licenseNumber" placeholder="Medical License Number">
+                    </div>
+
+                    <div class="input-group">
+                        <span>🏥</span>
+                        <input type="text" id="hospital" placeholder="Hospital/Clinic Name">
+                    </div>
+
+                    <div class="input-group">
+                        <span>📍</span>
+                        <input type="text" id="city" placeholder="City">
+                    </div>
+
+                    <div class="input-group">
+                        <span>⏰</span>
+                        <input type="number" id="experience" placeholder="Years of Experience" min="0" max="50">
+                    </div>
+
+                    <div class="input-group">
+                        <span>🎓</span>
+                        <select id="degree">
+                            <option value="">Select Degree</option>
+                            <option value="MBBS">MBBS</option>
+                            <option value="MD">MD</option>
+                            <option value="MS">MS</option>
+                            <option value="DM">DM</option>
+                            <option value="MCh">MCh</option>
+                            <option value="DNB">DNB</option>
+                            <option value="PhD">PhD</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <span>📝</span>
+                        <textarea id="qualifications" placeholder="Additional Qualifications (e.g., Fellowships, Certifications)"></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <span>💰</span>
+                        <input type="number" id="consultationFee" placeholder="Consultation Fee (USD)" min="0" step="10">
+                    </div>
+                </div>
+
+                <button type="submit" id="signupBtn">
+                    <span id="btnText">Create account</span>
+                </button>
+            </form>
+
+            <p class="login-link">
+                Already have an account? <a href="login.html">Sign in →</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { auth, db, Timestamp } from "../js/firebase.js";
+import { 
+    createUserWithEmailAndPassword, 
+    sendEmailVerification,
+    fetchSignInMethodsForEmail 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let isSubmitting = false;
+let selectedRole = 'patient';
+
+const blockedDomains = [
+    "tempmail.com", "10minutemail.com", "guerrillamail.com",
+    "mailinator.com", "yopmail.com", "trashmail.com", "tempmail.net"
+];
+
+let toastTimeout = null;
+
+window.showToast = function(msg, type = "success") {
+    const toast = document.getElementById("toast");
+    const icon = toast.querySelector(".toast-icon");
+    
+    document.getElementById("toastMsg").innerText = msg;
+    
+    if (type === "error") {
+        icon.style.background = "linear-gradient(135deg, #f56565, #ed64a6)";
+        icon.innerHTML = "⚠️";
+    } else if (type === "warning") {
+        icon.style.background = "linear-gradient(135deg, #ed8936, #dd6b20)";
+        icon.innerHTML = "⚠️";
+    } else {
+        icon.style.background = "linear-gradient(135deg, #48bb78, #38a169)";
+        icon.innerHTML = "✓";
+    }
+    
+    // Clear existing timeout
+    if (toastTimeout) clearTimeout(toastTimeout);
+    
+    toast.classList.add("show");
+    toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 4000);
+};
+
+function createParticles() {
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        const size = Math.random() * 5 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.animationDelay = `${Math.random() * 20}s`;
+        particle.style.animationDuration = `${15 + Math.random() * 15}s`;
+        particlesContainer.appendChild(particle);
+    }
+}
+
+createParticles();
+
+window.selectRole = function(role) {
+    selectedRole = role;
+    
+    document.querySelectorAll('.role-btn').forEach(btn => {
+        if (btn.getAttribute('data-role') === role) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    const doctorFields = document.getElementById('doctorFields');
+    if (role === 'doctor') {
+        doctorFields.classList.add('show');
+        // Make doctor fields required
+        document.getElementById('specialization').required = true;
+        document.getElementById('licenseNumber').required = true;
+        document.getElementById('hospital').required = true;
+        document.getElementById('city').required = true;
+        document.getElementById('experience').required = true;
+        document.getElementById('degree').required = true;
+    } else {
+        doctorFields.classList.remove('show');
+        // Remove required from doctor fields
+        document.getElementById('specialization').required = false;
+        document.getElementById('licenseNumber').required = false;
+        document.getElementById('hospital').required = false;
+        document.getElementById('city').required = false;
+        document.getElementById('experience').required = false;
+        document.getElementById('degree').required = false;
+    }
+    
+    if (navigator.vibrate) navigator.vibrate(50);
+};
+
+document.getElementById("signupForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+    isSubmitting = true;
+
+    const btn = document.getElementById("signupBtn");
+    const btnText = document.getElementById("btnText");
+    btn.disabled = true;
+    btn.style.opacity = "0.8";
+    btnText.innerHTML = '<span class="loading-spinner"></span> Creating account...';
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    // Validation
+    if (!name || !email || !password || !confirmPassword) {
+        showToast("Please fill in all fields", "error");
+        return resetBtn();
+    }
+
+    const domain = email.split("@")[1];
+    if (blockedDomains.includes(domain)) {
+        showToast("Temporary email addresses are not allowed", "error");
+        return resetBtn();
+    }
+
+    if (password !== confirmPassword) {
+        showToast("Passwords don't match", "error");
+        return resetBtn();
+    }
+
+    if (password.length < 8) {
+        showToast("Password must be at least 8 characters", "error");
+        return resetBtn();
+    }
+
+    const passwordStrength = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password);
+    if (!passwordStrength) {
+        showToast("Password must contain uppercase, lowercase & number", "error");
+        return resetBtn();
+    }
+
+    // Doctor field validation
+    if (selectedRole === 'doctor') {
+        const specialization = document.getElementById('specialization').value.trim();
+        const licenseNumber = document.getElementById('licenseNumber').value.trim();
+        const hospital = document.getElementById('hospital').value.trim();
+        const city = document.getElementById('city').value.trim();
+        const experience = document.getElementById('experience').value;
+        const degree = document.getElementById('degree').value;
+
+        if (!specialization || !licenseNumber || !hospital || !city || !experience || !degree) {
+            showToast("Please fill in all doctor information fields", "error");
+            return resetBtn();
+        }
+
+        if (experience < 0 || experience > 50) {
+            showToast("Please enter valid years of experience (0-50)", "error");
+            return resetBtn();
+        }
+    }
+
+    try {
+        // Check if email exists
+        const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+        if (signInMethods.length > 0) {
+            showToast("Email already registered. Please login instead.", "error");
+            return resetBtn();
+        }
+
+        // Create user
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCred.user;
+
+        // Send verification
+        await sendEmailVerification(user);
+
+        // Prepare user data
+        const nameParts = name.split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        const userData = {
+            uid: user.uid,
+            firstName,
+            lastName,
+            name,
+            email,
+            role: selectedRole,
+            emailVerified: false,
+            createdAt: Timestamp.now(),
+            updatedAt: Timestamp.now(),
+            profileComplete: false
+        };
+
+        // Doctor specific setup
+        if (selectedRole === 'doctor') {
+            const specialization = document.getElementById('specialization').value.trim();
+            const licenseNumber = document.getElementById('licenseNumber').value.trim();
+            const hospital = document.getElementById('hospital').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const experience = parseInt(document.getElementById('experience').value);
+            const degree = document.getElementById('degree').value;
+            const qualifications = document.getElementById('qualifications').value.trim();
+            const consultationFee = parseInt(document.getElementById('consultationFee').value) || 0;
+
+            Object.assign(userData, {
+                specialization,
+                licenseNumber,
+                hospital,
+                city,
+                experience,
+                degree,
+                qualifications,
+                consultationFee,
+                isApproved: false,
+                isAvailable: true,
+                rating: 0,
+                totalPatients: 0,
+                joinedAt: Timestamp.now()
+            });
+            
+            // Create default availability
+            const defaultAvailability = {
+                Monday: { enabled: true, start: "09:00", end: "17:00" },
+                Tuesday: { enabled: true, start: "09:00", end: "17:00" },
+                Wednesday: { enabled: true, start: "09:00", end: "17:00" },
+                Thursday: { enabled: true, start: "09:00", end: "17:00" },
+                Friday: { enabled: true, start: "09:00", end: "17:00" },
+                Saturday: { enabled: false, start: "09:00", end: "12:00" },
+                Sunday: { enabled: false, start: "09:00", end: "17:00" }
+            };
+            await setDoc(doc(db, "doctorAvailability", user.uid), defaultAvailability);
+        }
+
+        await setDoc(doc(db, "users", user.uid), userData);
+
+        const roleText = selectedRole === 'doctor' ? 'Doctor' : 'Patient';
+        showToast(`✨ Welcome ${firstName}! Your ${roleText} account has been created. Verification email sent to ${email}.`, "success");
+
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 3500);
+
+    } catch (err) {
+        console.error("Signup error:", err);
+        
+        const errorMessages = {
+            "auth/email-already-in-use": "Email already registered. Try logging in.",
+            "auth/invalid-email": "Invalid email format.",
+            "auth/weak-password": "Password is too weak. Use stronger password.",
+            "auth/network-request-failed": "Network error. Check your connection.",
+            "auth/operation-not-allowed": "Signup is temporarily disabled.",
+            "auth/too-many-requests": "Too many attempts. Please wait."
+        };
+        
+        const message = errorMessages[err.code] || `Signup failed: ${err.message}`;
+        showToast(message, "error");
+        resetBtn();
+    }
+});
+
+function resetBtn() {
+    isSubmitting = false;
+    const btn = document.getElementById("signupBtn");
+    const btnText = document.getElementById("btnText");
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btnText.innerHTML = 'Create account';
+}
+
+window.togglePassword = function(id, icon) {
+    const input = document.getElementById(id);
+    const type = input.type === "password" ? "text" : "password";
+    input.type = type;
+    icon.textContent = type === "text" ? "🙈" : "👁️";
+};
+
+// Add floating label effect
+document.querySelectorAll('.input-group input, .input-group select, .input-group textarea').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+    });
+    
+    input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+    });
+});
+</script>
+</body>
+</html>

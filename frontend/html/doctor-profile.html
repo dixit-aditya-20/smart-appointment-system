@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile - Lifeline Health AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #1aa6a6, #0d6e6e);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .doctor-avatar {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 60px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .doctor-name {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .doctor-specialty {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .profile-content {
+            padding: 40px;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .info-section h3 {
+            color: #1aa6a6;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 10px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #2c3e44;
+            font-size: 16px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schedule-table tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .schedule-table td {
+            padding: 12px;
+        }
+
+        .schedule-table td:first-child {
+            font-weight: 600;
+        }
+
+        .available {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .unavailable {
+            color: #e74c3c;
+        }
+
+        .book-btn {
+            background: linear-gradient(135deg, #1aa6a6, #0f8a8a);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26,166,166,0.3);
+        }
+
+        .back-btn {
+            background: #6c757d;
+            margin-top: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .toast.error {
+            background: #e74c3c;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .profile-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="doctor-avatar">
+            👨‍⚕️
+        </div>
+        <h1 class="doctor-name" id="doctorName">Loading...</h1>
+        <p class="doctor-specialty" id="doctorSpecialty"></p>
+    </div>
+
+    <div class="profile-content">
+        <div class="info-section">
+            <h3>📋 Professional Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">🏥 Hospital/Clinic</div>
+                    <div class="info-value" id="hospital"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">📜 License Number</div>
+                    <div class="info-value" id="licenseNumber"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">📧 Email</div>
+                    <div class="info-value" id="doctorEmail"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">📞 Phone</div>
+                    <div class="info-value" id="doctorPhone"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">⭐ Rating</div>
+                    <div class="info-value" id="rating"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">👥 Total Patients</div>
+                    <div class="info-value" id="totalPatients"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>📝 Bio & Experience</h3>
+            <p id="bio"></p>
+        </div>
+
+        <div class="info-section">
+            <h3>⏰ Working Schedule</h3>
+            <table class="schedule-table" id="scheduleTable">
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <button class="book-btn" onclick="goBackAndBook()">📅 Book Appointment with this Doctor</button>
+        <button class="book-btn back-btn" onclick="goBack()">← Back to Booking</button>
+    </div>
+</div>
+
+<script type="module">
+import { auth, db, getDoctorProfile } from "../js/firebase.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let doctorData = null;
+let toastTimeout = null;
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.textContent = message;
+    toast.className = 'toast';
+    toast.classList.add(type);
+    setTimeout(() => toast.classList.add('show'), 10);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+async function loadDoctorProfile() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const doctorId = urlParams.get('doctorId');
+    const doctorEmail = urlParams.get('email');
+    
+    if (!doctorId && !doctorEmail) {
+        showToast("Doctor information not found", "error");
+        return;
+    }
+    
+    try {
+        let doctor = null;
+        
+        if (doctorId) {
+            doctor = await getDoctorProfile(doctorId);
+        } else if (doctorEmail) {
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, where("email", "==", doctorEmail), where("role", "==", "doctor"));
+            const snapshot = await getDocs(q);
+            if (!snapshot.empty) {
+                doctor = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+            }
+        }
+        
+        if (!doctor) {
+            showToast("Doctor not found", "error");
+            return;
+        }
+        
+        doctorData = doctor;
+        
+        document.getElementById('doctorName').textContent = `Dr. ${doctor.firstName} ${doctor.lastName}`;
+        document.getElementById('doctorSpecialty').textContent = doctor.specialization || 'General Physician';
+        document.getElementById('hospital').textContent = doctor.hospital || 'Private Practice';
+        document.getElementById('licenseNumber').textContent = doctor.licenseNumber || 'Not provided';
+        document.getElementById('doctorEmail').textContent = doctor.email;
+        document.getElementById('doctorPhone').textContent = doctor.phone || 'Not provided';
+        document.getElementById('rating').textContent = `${doctor.rating || 0} ★ (${doctor.totalReviews || 0} reviews)`;
+        document.getElementById('totalPatients').textContent = doctor.totalPatients || 0;
+        document.getElementById('bio').textContent = doctor.bio || 'Experienced healthcare professional dedicated to patient care.';
+        
+        // Load availability
+        const availabilityRef = doc(db, "doctorAvailability", doctor.id);
+        const availabilitySnap = await getDoc(availabilityRef);
+        
+        const scheduleBody = document.getElementById('scheduleTable').querySelector('tbody');
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        
+        if (availabilitySnap.exists()) {
+            const availability = availabilitySnap.data();
+            scheduleBody.innerHTML = days.map(day => {
+                const schedule = availability[day];
+                const isAvailable = schedule && schedule.enabled;
+                const hours = isAvailable ? `${schedule.start} - ${schedule.end}` : 'Not working';
+                return `
+                    <tr>
+                        <td>${day}</td>
+                        <td class="${isAvailable ? 'available' : 'unavailable'}">${hours}</td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            scheduleBody.innerHTML = days.map(day => `
+                <tr>
+                    <td>${day}</td>
+                    <td class="available">09:00 - 17:00</td>
+                </tr>
+            `).join('');
+        }
+        
+    } catch (error) {
+        console.error("Error loading doctor profile:", error);
+        showToast("Error loading profile", "error");
+    }
+}
+
+window.goBackAndBook = () => {
+    if (doctorData) {
+        localStorage.setItem('selectedDoctor', JSON.stringify({
+            name: `Dr. ${doctorData.firstName} ${doctorData.lastName} (${doctorData.specialization})`,
+            id: doctorData.id
+        }));
+        window.location.href = "home.html";
+    }
+};
+
+window.goBack = () => {
+    window.location.href = "home.html";
+};
+
+loadDoctorProfile();
+</script>
+</body>
+</html>

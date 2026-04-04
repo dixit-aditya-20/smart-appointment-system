@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lifeline AI · Welcome Back</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+
+        /* Main container */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 48px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .main-container:hover {
+            transform: scale(1.01);
+        }
+
+        /* Image Section */
+        .image-section {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-section::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1%, transparent 1%);
+            background-size: 50px 50px;
+            animation: shimmer 20s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .image-section img {
+            max-width: 100%;
+            height: auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        }
+
+        /* Form Section */
+        .form-section {
+            flex: 1;
+            padding: 60px 48px;
+            background: white;
+        }
+
+        .form-box {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .form-section h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome-text {
+            color: #718096;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        /* Role Selection */
+        .role-selection {
+            margin-bottom: 28px;
+        }
+
+        .role-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 12px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #4a5568;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .role-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .role-btn.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Input Groups */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            background: #f7fafc;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .input-group:focus-within {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-group span {
+            padding: 0 16px;
+            font-size: 20px;
+            opacity: 0.6;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 16px 16px 16px 0;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .input-group input::placeholder {
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .toggle-eye {
+            position: absolute;
+            right: 16px;
+            cursor: pointer;
+            font-size: 20px;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+            background: transparent;
+            padding: 8px;
+        }
+
+        .toggle-eye:hover {
+            opacity: 1;
+        }
+
+        /* Extra Links */
+        .extra-links {
+            display: flex;
+            justify-content: space-between;
+            margin: 16px 0 24px;
+            gap: 12px;
+        }
+
+        .extra-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 2px;
+        }
+
+        .extra-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .extra-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button[type="submit"]:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -10px rgba(102, 126, 234, 0.5);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        /* Login Link */
+        .login-link {
+            text-align: center;
+            margin-top: 28px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .login-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .login-link a:hover::after {
+            width: 100%;
+        }
+
+        /* Toast Notification - FIXED */
+        .toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            transform: translateX(400px);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+            padding: 16px 24px;
+            min-width: 320px;
+            max-width: 400px;
+            z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .toast-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .toast-content strong {
+            display: block;
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .toast-content p {
+            font-size: 14px;
+            color: #718096;
+            margin: 0;
+        }
+
+        /* Loading animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .main-container {
+                flex-direction: column;
+                max-width: 550px;
+            }
+            
+            .image-section {
+                padding: 30px;
+                min-height: 200px;
+            }
+            
+            .image-section img {
+                max-width: 80%;
+            }
+
+            .form-section {
+                padding: 40px 24px;
+            }
+
+            .form-section h2 {
+                font-size: 28px;
+            }
+
+            .toast {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .form-section {
+                padding: 30px 20px;
+            }
+
+            .role-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .extra-links {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-box > * {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .logo { animation-delay: 0.1s; }
+        h2 { animation-delay: 0.2s; }
+        .welcome-text { animation-delay: 0.25s; }
+        .role-selection { animation-delay: 0.3s; }
+        .input-group:nth-child(1) { animation-delay: 0.4s; }
+        .input-group:nth-child(2) { animation-delay: 0.5s; }
+        .extra-links { animation-delay: 0.6s; }
+        button[type="submit"] { animation-delay: 0.7s; }
+        .login-link { animation-delay: 0.8s; }
+
+        .divider {
+            text-align: center;
+            margin: 24px 0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 60px);
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        .divider span {
+            background: white;
+            padding: 0 16px;
+            color: #a0aec0;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div id="toast" class="toast">
+    <div class="toast-content">
+        <span class="toast-icon">✓</span>
+        <div>
+            <strong>Notification</strong>
+            <p id="toastMsg"></p>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="image-section">
+        <img src="/Assets/images/signup/signup-side-removebg-preview.png" alt="Healthcare Illustration">
+    </div>
+
+    <div class="form-section">
+        <div class="form-box">
+            <div class="logo">⚕️ Lifeline AI</div>
+            <h2>Welcome back</h2>
+            <div class="welcome-text">Sign in to continue your health journey</div>
+
+            <div class="role-selection">
+                <span class="role-title">Login as</span>
+                <div class="role-buttons">
+                    <button type="button" class="role-btn active" data-role="patient" onclick="selectRole('patient')">
+                        👤 Patient
+                    </button>
+                    <button type="button" class="role-btn" data-role="doctor" onclick="selectRole('doctor')">
+                        👨‍⚕️ Doctor
+                    </button>
+                </div>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <span>📧</span>
+                    <input type="email" id="email" placeholder="Email address" required autocomplete="email">
+                </div>
+
+                <div class="input-group password-group">
+                    <span>🔒</span>
+                    <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+                    <i class="toggle-eye" onclick="togglePassword('password', this)">👁️</i>
+                </div>
+
+                <div class="extra-links">
+                    <a id="forgotPassword">🔐 Forgot password?</a>
+                    <a id="resendVerification">📧 Resend verification</a>
+                </div>
+
+                <button type="submit" id="loginBtn">
+                    <span id="btnText">Sign in</span>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>New to Lifeline?</span>
+            </div>
+
+            <p class="login-link">
+                <a href="signup.html">Create an account →</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { auth, db } from "../js/firebase.js";
+import { 
+    signInWithEmailAndPassword, 
+    sendPasswordResetEmail, 
+    sendEmailVerification,
+    fetchSignInMethodsForEmail
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let isSubmitting = false;
+let selectedRole = 'patient';
+const emailInput = document.getElementById("email");
+let toastTimeout = null;
+
+window.showToast = function(msg, type = "success") {
+    const toast = document.getElementById("toast");
+    const icon = toast.querySelector(".toast-icon");
+    
+    document.getElementById("toastMsg").innerText = msg;
+    
+    if (type === "error") {
+        icon.style.background = "linear-gradient(135deg, #f56565, #ed64a6)";
+        icon.innerHTML = "⚠️";
+    } else if (type === "warning") {
+        icon.style.background = "linear-gradient(135deg, #ed8936, #dd6b20)";
+        icon.innerHTML = "⚠️";
+    } else {
+        icon.style.background = "linear-gradient(135deg, #48bb78, #38a169)";
+        icon.innerHTML = "✓";
+    }
+    
+    if (toastTimeout) clearTimeout(toastTimeout);
+    
+    toast.classList.add("show");
+    toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 4000);
+};
+
+function createParticles() {
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        const size = Math.random() * 5 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.animationDelay = `${Math.random() * 20}s`;
+        particle.style.animationDuration = `${15 + Math.random() * 15}s`;
+        particlesContainer.appendChild(particle);
+    }
+}
+
+createParticles();
+
+// LOGIN SUBMIT
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+    isSubmitting = true;
+
+    const btn = document.getElementById("loginBtn");
+    const btnText = document.getElementById("btnText");
+    btn.disabled = true;
+    btn.style.opacity = "0.8";
+    btnText.innerHTML = '<span class="loading-spinner"></span> Signing in...';
+
+    const email = emailInput.value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        showToast("Please enter both email and password", "error");
+        return resetBtn();
+    }
+
+    try {
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCred.user;
+
+        if (!user.emailVerified) {
+            showToast("📧 Email not verified! Please check your inbox and verify your email address.", "error");
+            return resetBtn();
+        }
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        
+        if (!userDoc.exists()) {
+            showToast("Account data not found. Please contact support.", "error");
+            return resetBtn();
+        }
+
+        const userData = userDoc.data();
+        
+        if (userData.role !== selectedRole) {
+            const roleDisplay = userData.role === 'patient' ? 'Patient' : 'Doctor';
+            showToast(`⚠️ This account is registered as a ${roleDisplay}. Please select the correct role to login.`, "error");
+            return resetBtn();
+        }
+
+        if (selectedRole === 'doctor' && userData.isApproved === false) {
+            showToast("⏳ Your doctor account is pending approval. You'll receive an email once verified.", "warning");
+        }
+
+        showToast(`✨ Welcome back, ${userData.firstName || userData.name || 'User'}! Redirecting...`, "success");
+        
+        if (navigator.vibrate) navigator.vibrate(100);
+
+        setTimeout(() => {
+            if (selectedRole === 'doctor') {
+                window.location.href = "doctor.html";
+            } else {
+                window.location.href = "home.html";
+            }
+        }, 1500);
+
+    } catch (err) {
+        console.error("Login error:", err);
+        
+        const errorMessages = {
+            "auth/user-not-found": "No account found with this email. Please sign up first.",
+            "auth/invalid-credential": "Invalid email or password. Please try again.",
+            "auth/wrong-password": "Incorrect password. Please try again.",
+            "auth/invalid-email": "Invalid email format.",
+            "auth/user-disabled": "This account has been disabled. Contact support.",
+            "auth/too-many-requests": "Too many failed attempts. Please try again later.",
+            "auth/network-request-failed": "Network error. Check your internet connection."
+        };
+        
+        const message = errorMessages[err.code] || "Login failed. Please try again.";
+        showToast(message, "error");
+        resetBtn();
+    }
+});
+
+// FORGOT PASSWORD
+document.getElementById("forgotPassword").addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+        showToast("Please enter your email address first", "error");
+        emailInput.focus();
+        return;
+    }
+    
+    try {
+        const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+        if (signInMethods.length === 0) {
+            showToast("No account found with this email address", "error");
+            return;
+        }
+        
+        await sendPasswordResetEmail(auth, email);
+        showToast("📧 Password reset email sent! Check your inbox.", "success");
+    } catch (err) {
+        console.error("Reset error:", err);
+        showToast("Failed to send reset email. Please try again.", "error");
+    }
+});
+
+// RESEND VERIFICATION
+document.getElementById("resendVerification").addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+        showToast("Please enter your email address first", "error");
+        emailInput.focus();
+        return;
+    }
+    
+    try {
+        const userCred = await signInWithEmailAndPassword(auth, email, "temp_password_for_verification");
+    } catch (error) {
+        if (error.code === "auth/wrong-password" && error.user) {
+            if (error.user.emailVerified) {
+                showToast("Your email is already verified! You can login now.", "success");
+            } else {
+                try {
+                    await sendEmailVerification(error.user);
+                    showToast("📧 Verification email resent! Please check your inbox (and spam folder).", "success");
+                } catch (err) {
+                    showToast("Unable to resend verification. Please try again.", "error");
+                }
+            }
+        } else if (error.code === "auth/user-not-found") {
+            showToast("No account found with this email address", "error");
+        } else {
+            showToast("Please enter a valid email address", "error");
+        }
+    }
+});
+
+function resetBtn() {
+    isSubmitting = false;
+    const btn = document.getElementById("loginBtn");
+    const btnText = document.getElementById("btnText");
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btnText.innerHTML = 'Sign in';
+}
+
+window.selectRole = function(role) {
+    selectedRole = role;
+    
+    document.querySelectorAll('.role-btn').forEach(btn => {
+        if (btn.getAttribute('data-role') === role) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    if (navigator.vibrate) navigator.vibrate(50);
+};
+
+window.togglePassword = function(id, icon) {
+    const input = document.getElementById(id);
+    const type = input.type === "password" ? "text" : "password";
+    input.type = type;
+    icon.textContent = type === "text" ? "🙈" : "👁️";
+};
+
+// Add floating label effect
+document.querySelectorAll('.input-group input').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+    });
+    
+    input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+    });
+});
+
+document.getElementById('password').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+    }
+});
+</script>
+</body>
+</html>

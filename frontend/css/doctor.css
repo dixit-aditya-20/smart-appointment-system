@@ -1,0 +1,115 @@
+/* Doctor Portal Specific Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+    min-height: 100vh;
+}
+
+/* Custom Scrollbar for Queue Lists */
+.queue-list::-webkit-scrollbar,
+.schedule-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.queue-list::-webkit-scrollbar-track,
+.schedule-list::-webkit-scrollbar-track {
+    background: #e0e0e0;
+    border-radius: 10px;
+}
+
+.queue-list::-webkit-scrollbar-thumb,
+.schedule-list::-webkit-scrollbar-thumb {
+    background: #1aa6a6;
+    border-radius: 10px;
+}
+
+/* Animation for new patients */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.queue-item {
+    animation: slideIn 0.3s ease;
+}
+
+/* Hover Effects */
+.queue-item:hover,
+.appointment-card:hover {
+    background: #e8f5e9;
+    transition: all 0.2s;
+}
+
+/* Status Indicators */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.status-waiting {
+    background: #ffc107;
+    color: #856404;
+}
+
+.status-completed {
+    background: #27ae60;
+    color: white;
+}
+
+.status-cancelled {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .navbar {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .doctor-info {
+        justify-content: center;
+    }
+}
+
+/* Print Styles for Prescription */
+@media print {
+    .navbar,
+    .stats-grid,
+    .doctor-selector,
+    .refresh-btn,
+    .logout-btn,
+    .action-buttons {
+        display: none;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}

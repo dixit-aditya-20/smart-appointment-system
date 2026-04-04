@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Lifeline Health AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1aa6a6;
+        }
+
+        .doctor-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .doctor-name {
+            font-weight: 600;
+            color: #2c3e44;
+        }
+
+        .availability-badge {
+            background: #27ae60;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .availability-badge.online {
+            background: #27ae60;
+        }
+
+        .availability-badge.offline {
+            background: #e74c3c;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            color: #1aa6a6;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e44;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #1aa6a6;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e0f2f1;
+            padding-bottom: 10px;
+        }
+
+        .refresh-btn {
+            margin-left: auto;
+            background: #1aa6a6;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .day-schedule {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .day-name {
+            font-weight: bold;
+            width: 100px;
+        }
+
+        .time-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+
+        .time-range input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #27ae60;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .save-availability {
+            background: #1aa6a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .save-availability:hover {
+            transform: translateY(-2px);
+        }
+
+        .appointment-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid #ffc107;
+            transition: transform 0.2s;
+        }
+
+        .appointment-item:hover {
+            transform: translateX(5px);
+        }
+
+        .appointment-item.completed {
+            border-left-color: #3498db;
+            background: #e8f0fe;
+        }
+
+        .appointment-item.cancelled {
+            border-left-color: #e74c3c;
+            opacity: 0.6;
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .patient-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e44;
+        }
+
+        .appointment-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #ffc107;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #3498db;
+            color: white;
+        }
+
+        .status-cancelled {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .appointment-details {
+            margin-top: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .appointment-details div {
+            margin: 5px 0;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .complete-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .cancel-appointment-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .toast.error {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .online-status-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .online-status-badge.online {
+            background-color: #2ecc71;
+        }
+        
+        .online-status-badge.offline {
+            background-color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .day-schedule {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">🏥 Lifeline Doctor Portal</div>
+    <div class="doctor-info">
+        <span class="doctor-name" id="doctorName">Loading...</span>
+        <span class="availability-badge" id="availabilityStatus">● Checking...</span>
+        <button class="logout-btn" onclick="window.handleLogout()">🚪 Logout</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>📋 Active (Pending)</h3>
+            <div class="stat-number" id="activeCount">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>✅ Completed</h3>
+            <div class="stat-number" id="completedCount">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>❌ Cancelled</h3>
+            <div class="stat-number" id="cancelledCount">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>👥 Total Patients</h3>
+            <div class="stat-number" id="totalPatients">0</div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="card">
+            <h3>⏰ Set Your Availability</h3>
+            <div id="availabilityContainer"></div>
+            <button class="save-availability" onclick="window.saveAvailability()">💾 Save Availability Settings</button>
+        </div>
+
+        <div class="card">
+            <h3>⏳ Active Appointments (Pending)</h3>
+            <button class="refresh-btn" onclick="window.loadDoctorAppointments()">🔄 Refresh</button>
+            <div id="activeList"></div>
+        </div>
+
+        <div class="card">
+            <h3>✅ Completed Appointments</h3>
+            <div id="completedList"></div>
+        </div>
+
+        <div class="card">
+            <h3>❌ Cancelled Appointments</h3>
+            <div id="cancelledList"></div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+import { auth, db, USER_ROLES } from "../js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    collection, query, where, getDocs, updateDoc, doc, 
+    Timestamp, getDoc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let currentUser = null;
+let doctorData = null;
+let allAppointments = [];
+let toastTimeout = null;
+
+const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+const dayIndexMap = {
+    0: "Sunday", 1: "Monday", 2: "Tuesday", 3: "Wednesday",
+    4: "Thursday", 5: "Friday", 6: "Saturday"
+};
+
+const defaultAvailability = {
+    Monday: { enabled: true, start: "09:00", end: "17:00" },
+    Tuesday: { enabled: true, start: "09:00", end: "17:00" },
+    Wednesday: { enabled: true, start: "09:00", end: "17:00" },
+    Thursday: { enabled: true, start: "09:00", end: "17:00" },
+    Friday: { enabled: true, start: "09:00", end: "17:00" },
+    Saturday: { enabled: false, start: "09:00", end: "12:00" },
+    Sunday: { enabled: false, start: "10:00", end: "14:00" }
+};
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.textContent = message;
+    toast.className = 'toast';
+    toast.classList.add(type);
+    setTimeout(() => toast.classList.add('show'), 10);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function getCurrentDayName() {
+    const today = new Date();
+    const dayIndex = today.getDay();
+    return dayIndexMap[dayIndex];
+}
+
+function getCurrentTime() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
+function isTimeInRange(currentTime, startTime, endTime) {
+    return currentTime >= startTime && currentTime <= endTime;
+}
+
+async function checkCurrentAvailability(availability) {
+    const currentDay = getCurrentDayName();
+    const currentTime = getCurrentTime();
+    const todaySchedule = availability[currentDay];
+    
+    if (!todaySchedule || !todaySchedule.enabled) {
+        return { available: false, reason: "Not working today" };
+    }
+    
+    const isWithinHours = isTimeInRange(currentTime, todaySchedule.start, todaySchedule.end);
+    return { available: isWithinHours, schedule: todaySchedule };
+}
+
+async function updateAvailabilityStatus(availability) {
+    const status = await checkCurrentAvailability(availability);
+    const statusSpan = document.getElementById('availabilityStatus');
+    
+    if (status.available) {
+        statusSpan.innerHTML = `🟢 ONLINE - Available Now (${status.schedule.start} - ${status.schedule.end})`;
+        statusSpan.className = "availability-badge online";
+    } else {
+        statusSpan.innerHTML = `🔴 OFFLINE - Not available`;
+        statusSpan.className = "availability-badge offline";
+    }
+}
+
+async function loadDoctorAvailability() {
+    if (!currentUser) return;
+    
+    try {
+        const availabilityRef = doc(db, "doctorAvailability", currentUser.uid);
+        const availabilitySnap = await getDoc(availabilityRef);
+        
+        let availability = {};
+        
+        if (availabilitySnap.exists()) {
+            availability = availabilitySnap.data();
+        } else {
+            availability = JSON.parse(JSON.stringify(defaultAvailability));
+            await setDoc(availabilityRef, availability);
+        }
+        
+        renderAvailabilityForm(availability);
+        await updateAvailabilityStatus(availability);
+        
+        return availability;
+    } catch (error) {
+        console.error("Error loading availability:", error);
+        return defaultAvailability;
+    }
+}
+
+function renderAvailabilityForm(availability) {
+    const container = document.getElementById('availabilityContainer');
+    
+    container.innerHTML = daysOfWeek.map(day => {
+        const schedule = availability[day] || { enabled: false, start: "09:00", end: "17:00" };
+        const isChecked = schedule.enabled === true;
+        const isToday = day === getCurrentDayName();
+        return `
+            <div class="day-schedule" style="${isToday ? 'background: #f0f9ff;' : ''}">
+                <div class="day-name">${day} ${isToday ? '(Today)' : ''}</div>
+                <div class="time-range">
+                    <label class="toggle-switch">
+                        <input type="checkbox" class="day-enabled" data-day="${day}" ${isChecked ? 'checked' : ''}>
+                        <span class="slider"></span>
+                    </label>
+                    <input type="time" class="start-time" data-day="${day}" value="${schedule.start}" ${!isChecked ? 'disabled' : ''}>
+                    <span>to</span>
+                    <input type="time" class="end-time" data-day="${day}" value="${schedule.end}" ${!isChecked ? 'disabled' : ''}>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.querySelectorAll('.day-enabled').forEach(toggle => {
+        toggle.addEventListener('change', (e) => {
+            const day = e.target.dataset.day;
+            const startInput = document.querySelector(`.start-time[data-day="${day}"]`);
+            const endInput = document.querySelector(`.end-time[data-day="${day}"]`);
+            const isChecked = e.target.checked;
+            startInput.disabled = !isChecked;
+            endInput.disabled = !isChecked;
+        });
+    });
+}
+
+window.saveAvailability = async function() {
+    if (!currentUser) {
+        showToast("Please login first", "error");
+        return;
+    }
+    
+    const availability = {};
+    
+    daysOfWeek.forEach(day => {
+        const enabledCheckbox = document.querySelector(`.day-enabled[data-day="${day}"]`);
+        const startInput = document.querySelector(`.start-time[data-day="${day}"]`);
+        const endInput = document.querySelector(`.end-time[data-day="${day}"]`);
+        
+        const enabled = enabledCheckbox ? enabledCheckbox.checked : false;
+        const start = startInput ? startInput.value : "09:00";
+        const end = endInput ? endInput.value : "17:00";
+        
+        availability[day] = { enabled, start, end };
+    });
+    
+    try {
+        const availabilityRef = doc(db, "doctorAvailability", currentUser.uid);
+        await setDoc(availabilityRef, availability);
+        showToast("✅ Availability saved successfully!", "success");
+        await updateAvailabilityStatus(availability);
+    } catch (error) {
+        console.error("Error saving availability:", error);
+        showToast("❌ Error saving availability: " + error.message, "error");
+    }
+};
+
+async function loadDoctorAppointments() {
+    if (!currentUser || !doctorData) return;
+    
+    try {
+        const doctorFullName = `Dr. ${doctorData.firstName} ${doctorData.lastName} (${doctorData.specialization || 'General'})`;
+        
+        console.log("🔍 Looking for appointments with doctor:", doctorFullName);
+        
+        const appointmentsRef = collection(db, 'appointments');
+        const q = query(appointmentsRef, where('doctor', '==', doctorFullName));
+        const snapshot = await getDocs(q);
+        
+        allAppointments = [];
+        snapshot.forEach(docSnap => {
+            allAppointments.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        
+        console.log(`📊 Found ${allAppointments.length} total appointments`);
+        
+        allAppointments.sort((a, b) => {
+            const dateTimeA = new Date(`${a.date}T${a.time || '00:00'}`);
+            const dateTimeB = new Date(`${b.date}T${b.time || '00:00'}`);
+            return dateTimeA - dateTimeB;
+        });
+        
+        const activeAppointments = allAppointments.filter(a => a.status === 'active');
+        const completedAppointments = allAppointments.filter(a => a.status === 'completed');
+        const cancelledAppointments = allAppointments.filter(a => a.status === 'cancelled');
+        
+        document.getElementById('activeCount').innerText = activeAppointments.length;
+        document.getElementById('completedCount').innerText = completedAppointments.length;
+        document.getElementById('cancelledCount').innerText = cancelledAppointments.length;
+        document.getElementById('totalPatients').innerText = completedAppointments.length + cancelledAppointments.length;
+        
+        renderAppointmentList(activeAppointments, 'activeList', 'active');
+        renderAppointmentList(completedAppointments, 'completedList', 'completed');
+        renderAppointmentList(cancelledAppointments, 'cancelledList', 'cancelled');
+        
+    } catch (error) {
+        console.error("Error loading appointments:", error);
+        showToast("Error loading appointments: " + error.message, "error");
+    }
+}
+
+function renderAppointmentList(appointments, containerId, type) {
+    const container = document.getElementById(containerId);
+    
+    if (appointments.length === 0) {
+        container.innerHTML = `<div class="empty-state">No ${type} appointments</div>`;
+        return;
+    }
+    
+    container.innerHTML = appointments.map(app => {
+        let statusClass = 'status-active';
+        let statusText = '🟡 Pending';
+        
+        if (type === 'completed') {
+            statusClass = 'status-completed';
+            statusText = '✅ Completed';
+        } else if (type === 'cancelled') {
+            statusClass = 'status-cancelled';
+            statusText = '❌ Cancelled';
+        }
+        
+        return `
+            <div class="appointment-item ${type}">
+                <div class="appointment-header">
+                    <span class="patient-name">👤 ${escapeHtml(app.name || 'Patient')}</span>
+                    <span class="appointment-status ${statusClass}">
+                        ${statusText}
+                    </span>
+                </div>
+                <div class="appointment-details">
+                    <div>📅 ${app.date} at ${app.time || 'Not specified'}</div>
+                    <div>📞 ${app.phone || 'No phone provided'}</div>
+                    <div>💬 ${escapeHtml(app.symptoms || app.message || 'No symptoms described')}</div>
+                    ${app.queuePosition ? `<div>🎫 Queue Position: #${app.queuePosition}</div>` : ''}
+                    <div>🆔 ID: ${app.id.substring(0, 8)}...</div>
+                </div>
+                ${type === 'active' ? `
+                    <div class="appointment-actions">
+                        <button class="complete-btn" onclick="window.completeAppointment('${app.id}')">✅ Mark as Completed</button>
+                        <button class="cancel-appointment-btn" onclick="window.cancelAppointment('${app.id}')">❌ Cancel</button>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+window.completeAppointment = async (appointmentId) => {
+    if (confirm("Mark this appointment as completed?")) {
+        try {
+            await updateDoc(doc(db, 'appointments', appointmentId), {
+                status: 'completed',
+                completedAt: Timestamp.now(),
+                completedBy: currentUser?.uid
+            });
+            showToast("✅ Appointment marked as completed!", "success");
+            await loadDoctorAppointments();
+        } catch (error) {
+            console.error("Error completing appointment:", error);
+            showToast("Error completing appointment", "error");
+        }
+    }
+};
+
+window.cancelAppointment = async (appointmentId) => {
+    if (confirm("Are you sure you want to cancel this appointment?")) {
+        try {
+            await updateDoc(doc(db, 'appointments', appointmentId), {
+                status: 'cancelled',
+                cancelledAt: Timestamp.now(),
+                cancelledBy: currentUser?.uid
+            });
+            showToast("❌ Appointment cancelled", "success");
+            await loadDoctorAppointments();
+        } catch (error) {
+            console.error("Error cancelling appointment:", error);
+            showToast("Error cancelling appointment", "error");
+        }
+    }
+};
+
+window.handleLogout = async () => {
+    try {
+        await signOut(auth);
+        showToast("Logged out successfully", "success");
+        setTimeout(() => {
+            window.location.href = "doctor-login.html";
+        }, 1000);
+    } catch (error) {
+        showToast("Error logging out: " + error.message, "error");
+    }
+};
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+window.loadDoctorAppointments = loadDoctorAppointments;
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists() && userDoc.data().role === USER_ROLES.DOCTOR) {
+                currentUser = user;
+                doctorData = userDoc.data();
+                const specialization = doctorData.specialization || 'General';
+                document.getElementById('doctorName').innerHTML = `👨‍⚕️ Dr. ${doctorData.firstName} ${doctorData.lastName} (${specialization})`;
+                
+                await loadDoctorAvailability();
+                await loadDoctorAppointments();
+                
+                setInterval(() => {
+                    if (document.visibilityState === 'visible') {
+                        loadDoctorAppointments();
+                    }
+                }, 30000);
+                
+            } else {
+                window.location.href = "doctor-login.html";
+            }
+        } catch (error) {
+            console.error("Error loading doctor data:", error);
+            window.location.href = "doctor-login.html";
+        }
+    } else {
+        window.location.href = "doctor-login.html";
+    }
+});
+</script>
+</body>
+</html>

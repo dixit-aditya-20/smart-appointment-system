@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Lifeline Health AI</title>
+    <link rel="stylesheet" href="../css/home.css">
+    <style>
+        /* Modern CSS Reset & Variables */
+        :root {
+            --primary: #0f2b3d;
+            --primary-light: #1a4a6b;
+            --secondary: #00b4d8;
+            --accent: #ff6b35;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --white: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Modern Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            color: var(--dark);
+            height: 100vh;
+            position: fixed;
+            padding: 30px 20px;
+            box-shadow: var(--shadow-xl);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 40px;
+            font-size: 28px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--dark);
+            text-decoration: none;
+            padding: 14px 18px;
+            margin: 8px 0;
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,180,216,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .sidebar a:hover::before {
+            left: 100%;
+        }
+
+        .sidebar a:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .sidebar a.active-nav {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 280px;
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - 280px);
+        }
+
+        /* Modern Topbar */
+        .topbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .topbar h3 {
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-section span {
+            font-weight: 600;
+            color: var(--dark);
+            background: var(--gray-100);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+        }
+
+        .user-section button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-section button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Doctor Status Styles */
+        .doctor-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .status-offline {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .status-busy {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+            border: 1px solid #f39c12;
+        }
+
+        .online-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .online-dot.online {
+            background-color: #27ae60;
+            box-shadow: 0 0 5px #27ae60;
+        }
+
+        .online-dot.offline {
+            background-color: #e74c3c;
+            animation: none;
+        }
+
+        .online-dot.busy {
+            background-color: #f39c12;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Doctor Option Styling */
+        .doctor-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        select option {
+            padding: 10px;
+        }
+
+        /* Modern Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card p {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Modern Appointment Boxes */
+        .appointment-box {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .appointment-box:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .appointment-box h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Modern Form Styles */
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        form input:focus, form select:focus, form textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(0,180,216,0.1);
+        }
+
+        form button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        form button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        form button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Modern Prescription Items */
+        .prescription-item {
+            background: linear-gradient(135deg, var(--gray-100), white);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .prescription-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Modern Appointment Items */
+        .appointment-item {
+            background: linear-gradient(135deg, var(--gray-100), white);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .appointment-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Modern Queue Badge */
+        .queue-badge {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Modern Waiting Indicator */
+        .waiting-indicator {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-left: 4px solid var(--warning);
+            padding: 12px;
+            margin-top: 12px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+        }
+
+        /* Modern Countdown Timer */
+        .countdown-timer {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* Modern Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xl);
+            z-index: 9999;
+            min-width: 300px;
+            font-weight: 600;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, var(--success), #27ae60);
+            color: white;
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, var(--danger), #c0392b);
+            color: white;
+        }
+
+        .toast.info {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+        }
+
+        /* Modern Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 450px;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.3s ease;
+        }
+
+        /* Modern Buttons */
+        .reschedule-btn, .cancel-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            margin-right: 10px;
+        }
+
+        .reschedule-btn {
+            background: linear-gradient(135deg, var(--warning), #e67e22);
+            color: white;
+        }
+
+        .cancel-btn {
+            background: linear-gradient(135deg, var(--danger), #c0392b);
+            color: white;
+        }
+
+        .reschedule-btn:hover, .cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 10px;
+            }
+            
+            .sidebar h2 {
+                font-size: 14px;
+            }
+            
+            .sidebar a span:not(.icon) {
+                display: none;
+            }
+            
+            .main {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+                padding: 15px;
+            }
+            
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-200);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 10px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: var(--gray-500);
+            font-style: italic;
+        }
+
+        /* Doctor Queue Header */
+        .doctor-queue-header {
+            background: linear-gradient(135deg, var(--gray-100), white);
+            padding: 15px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            border-left: 4px solid var(--secondary);
+        }
+
+        /* Queue Row */
+        .queue-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        /* Loader */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader-spinner {
+            background: white;
+            padding: 30px 40px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .loader-spinner div {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Settings Card */
+        .settings-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .settings-card h3 {
+            color: white !important;
+        }
+
+        .settings-card label {
+            color: white;
+        }
+
+        .refresh-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .refresh-controls select {
+            width: auto;
+            display: inline-block;
+            margin: 0 10px;
+            background: white;
+        }
+
+        .refresh-controls button {
+            width: auto;
+            padding: 8px 16px;
+            margin-top: 0;
+        }
+
+        .countdown-text {
+            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+        }
+    </style>
+</head>
+<body>
+
+<div id="loaderOverlay" class="loader-overlay">
+    <div class="loader-spinner">
+        <div>⏳ Processing...</div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="rescheduleModal" class="modal">
+    <div class="modal-content">
+        <h3>🔄 Reschedule Appointment</h3>
+        <p id="rescheduleAppName"></p>
+        <label>New Date</label>
+        <input type="date" id="rescheduleDate">
+        <label>New Time</label>
+        <input type="time" id="rescheduleTime">
+        <div class="modal-buttons" style="margin-top: 20px; display: flex; gap: 10px;">
+            <button class="confirm-reschedule" onclick="confirmReschedule()" style="flex:1;">Confirm</button>
+            <button class="cancel-reschedule" onclick="closeRescheduleModal()" style="flex:1;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="sidebar">
+    <h2>🩺 Lifeline</h2>
+    <a href="#" class="active-nav"><i class="icon">🏠</i> Dashboard</a>
+    <a href="#" onclick="refreshData()"><i class="icon">🔄</i> Refresh</a>
+    <a href="profile.html"><i class="icon">👤</i> Profile</a>
+    <a href="#" onclick="handleLogout()"><i class="icon">🚪</i> Logout</a>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <h3>Health Dashboard</h3>
+        <div class="user-section">
+            <span id="userName">Loading...</span>
+            <button onclick="refreshData()"><i>🔄</i> Sync</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="cards">
+            <div class="card">
+                <h3>📋 My Active</h3>
+                <p id="activeCount" style="font-size: 32px; font-weight: bold;">0</p>
+                <small>My upcoming appointments</small>
+            </div>
+            <div class="card">
+                <h3>✅ Completed</h3>
+                <p id="completedCount" style="font-size: 32px; font-weight: bold;">0</p>
+                <small>Past consultations</small>
+            </div>
+            <div class="card">
+                <h3>💊 Prescriptions</h3>
+                <p id="rxCount" style="font-size: 32px; font-weight: bold;">0</p>
+                <small>AI-generated</small>
+            </div>
+        </div>
+
+        <!-- Settings Card for Refresh Control -->
+        <div class="card settings-card">
+            <h3>⚙️ Refresh Doctor Availiablety</h3>
+            <div class="refresh-controls">
+                <div>
+                    <label>Auto-refresh delay: </label>
+                    <select id="refreshDelaySelect">
+                        <option value="10">10 seconds</option>
+                        <option value="20">20 seconds</option>
+                        <option value="30">30 seconds</option>
+                        <option value="45">45 seconds</option>
+                        <option value="60">60 seconds</option>
+                        <option value="120">2 minutes</option>
+                        <option value="300" selected>5 minutes</option>
+                    </select>
+                    <button onclick="applyRefreshDelay()">Apply Delay</button>
+                </div>
+                <div>
+                    <span id="nextRefreshCountdown" class="countdown-text">Next refresh in: --s</span>
+                </div>
+                <div>
+                    <button onclick="manualRefreshWithPreserve()" style="background: var(--gray-200);">
+                        🔄 Manual Refresh (Preserve Selection)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="appointment-box">
+            <h3>🏥 Live Queue Status</h3>
+            <div id="globalQueueStatus"></div>
+        </div>
+
+        <div class="appointment-box">
+            <h3>📅 Book New Appointment</h3>
+            <form id="bookingForm">
+                <input type="text" id="patientName" placeholder="Full Name" required>
+                <input type="email" id="patientEmail" placeholder="Email" readonly required>
+                <small class="email-info">📧 This email is linked to your account and cannot be changed</small>
+                <input type="tel" id="patientPhone" placeholder="Phone (10 digits)" maxlength="10" required>
+                <select id="doctorSelect" required>
+                    <option value="">Select Doctor</option>
+                </select>
+                <div id="doctorStatusMessage" style="margin: 10px 0; font-size: 13px;"></div>
+                <select id="symptomSelect">
+                    <option value="">Quick Symptom Select</option>
+                    <option value="Persistent cough, cold, mild fever">🤧 Cough & Cold</option>
+                    <option value="High fever, body ache, chills">🌡️ Fever & Flu</option>
+                    <option value="Severe headache, light sensitivity">🤕 Migraine/Headache</option>
+                    <option value="Chest tightness, shortness of breath">🫁 Respiratory Issue</option>
+                </select>
+                <textarea id="symptomsDetail" rows="2" placeholder="Describe your symptoms in detail..."></textarea>
+                <div style="display: flex; gap: 10px;">
+                    <input type="date" id="appointmentDate" style="width: 50%;" required>
+                    <input type="time" id="appointmentTime" style="width: 50%;" required>
+                </div>
+                <div id="bookingStatus" class="booking-status"></div>
+                <button type="submit" id="bookBtn">✅ Confirm Booking</button>
+            </form>
+        </div>
+
+        <div class="appointment-box">
+            <h3>⏳ My Active Appointments <span id="queueInfo"></span></h3>
+            <div id="activeAppointmentsList">
+                <div class="empty-state">No active appointments</div>
+            </div>
+        </div>
+
+        <div class="appointment-box">
+            <h3>📜 Appointment History</h3>
+            <div id="historyList">
+                <div class="empty-state">No past appointments</div>
+            </div>
+        </div>
+
+        <div class="appointment-box">
+            <h3>💊 AI Prescriptions & Health Insights</h3>
+            <div id="prescriptionsList">
+                <div class="empty-state">Complete appointments to get AI prescriptions</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { auth, db, USER_ROLES } from "../js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    collection, getDocs, addDoc, updateDoc, doc, 
+    Timestamp, getDoc, setDoc, query, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let currentUser = null;
+let allGlobalAppointments = [];
+let allDoctors = [];
+let doctorAvailability = {};
+let countdownIntervals = {};
+let liveQueueIntervals = {};
+let toastTimeout = null;
+let appointmentToReschedule = null;
+let doctorStatusInterval = null;
+let lastSelectedDoctor = null;
+let refreshDelay = 30000;
+let autoRefreshInterval = null;
+let countdownTimerInterval = null;
+
+function calculateWaitTime(queuePosition) {
+    return 5 + (queuePosition - 1) * 15;
+}
+
+function formatWaitTime(minutes) {
+    const days = Math.floor(minutes / (24 * 60));
+    const hours = Math.floor((minutes % (24 * 60)) / 60);
+    const mins = minutes % 60;
+    const parts = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (mins > 0) parts.push(`${mins}m`);
+    return parts.join(' ') || '0m';
+}
+
+function formatCountdown(milliseconds) {
+    if (milliseconds <= 0) return "Ready!";
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const days = Math.floor(totalSeconds / (24 * 3600));
+    const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const parts = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    parts.push(`${seconds}s`);
+    return parts.join(' ');
+}
+
+function getCurrentDayName() {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return days[new Date().getDay()];
+}
+
+function getCurrentTime() {
+    const now = new Date();
+    return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+}
+
+// NEW FUNCTION: Check if appointment time is within doctor's working hours
+async function isAppointmentTimeValid(doctorId, appointmentDate, appointmentTime) {
+    try {
+        const availabilityRef = doc(db, "doctorAvailability", doctorId);
+        const availabilitySnap = await getDoc(availabilityRef);
+        
+        if (!availabilitySnap.exists()) {
+            return { valid: false, message: "Doctor availability not configured" };
+        }
+        
+        const availability = availabilitySnap.data();
+        
+        const appointmentDay = new Date(appointmentDate).toLocaleDateString('en-US', { weekday: 'long' });
+        
+        const dayMap = {
+            'Sunday': 'Sunday', 'Monday': 'Monday', 'Tuesday': 'Tuesday',
+            'Wednesday': 'Wednesday', 'Thursday': 'Thursday', 'Friday': 'Friday', 'Saturday': 'Saturday'
+        };
+        const dayKey = dayMap[appointmentDay];
+        
+        const daySchedule = availability[dayKey];
+        
+        if (!daySchedule || !daySchedule.enabled) {
+            return { valid: false, message: `Doctor is not available on ${appointmentDay}s` };
+        }
+        
+        const startTime = daySchedule.start;
+        const endTime = daySchedule.end;
+        
+        if (appointmentTime < startTime || appointmentTime > endTime) {
+            return { 
+                valid: false, 
+                message: `Doctor works from ${startTime} to ${endTime} on ${appointmentDay}s. Please select a time within these hours.` 
+            };
+        }
+        
+        return { valid: true, message: "Time is within doctor's working hours" };
+        
+    } catch (error) {
+        console.error("Error checking appointment time:", error);
+        return { valid: false, message: "Error checking doctor availability" };
+    }
+}
+
+async function loadDoctors() {
+    try {
+        const q = query(collection(db, 'users'), where('role', '==', USER_ROLES.DOCTOR));
+        const snapshot = await getDocs(q);
+        allDoctors = [];
+        
+        for (const docSnap of snapshot.docs) {
+            const doctor = docSnap.data();
+            const doctorId = docSnap.id;
+            
+            let availability = doctorAvailability[doctorId];
+            if (!availability) {
+                const availabilityRef = doc(db, "doctorAvailability", doctorId);
+                const availabilitySnap = await getDoc(availabilityRef);
+                
+                if (availabilitySnap.exists()) {
+                    const savedAvail = availabilitySnap.data();
+                    const currentDay = getCurrentDayName();
+                    const todaySchedule = savedAvail[currentDay];
+                    const currentTime = getCurrentTime();
+                    
+                    if (todaySchedule && todaySchedule.enabled && 
+                        currentTime >= todaySchedule.start && 
+                        currentTime <= todaySchedule.end) {
+                        availability = { status: 'online', message: `Online (${todaySchedule.start} - ${todaySchedule.end})` };
+                    } else if (todaySchedule && todaySchedule.enabled) {
+                        availability = { status: 'offline', message: `Will be online at ${todaySchedule.start}` };
+                    } else {
+                        availability = { status: 'offline', message: 'Not accepting appointments today' };
+                    }
+                } else {
+                    availability = { status: 'offline', message: 'Availability not configured' };
+                }
+                doctorAvailability[doctorId] = availability;
+            }
+            
+            allDoctors.push({
+                id: doctorId,
+                uid: doctorId,
+                firstName: doctor.firstName || 'Unknown',
+                lastName: doctor.lastName || '',
+                specialization: doctor.specialization || 'General Physician',
+                email: doctor.email,
+                availability: availability
+            });
+        }
+        
+        console.log("Loaded doctors:", allDoctors);
+        populateDoctorSelect();
+        
+    } catch (error) {
+        console.error("Error loading doctors:", error);
+        showToastMessage("Error loading doctors", 'error');
+    }
+}
+
+function populateDoctorSelect() {
+    const select = document.getElementById('doctorSelect');
+    const currentValue = select ? select.value : null;
+    
+    select.innerHTML = '<option value="">Select Doctor</option>';
+    
+    allDoctors.forEach(doctor => {
+        const option = document.createElement('option');
+        const doctorName = `Dr. ${doctor.firstName} ${doctor.lastName} (${doctor.specialization})`;
+        option.value = doctorName;
+        
+        const statusIcon = doctor.availability.status === 'online' ? '🟢' : '🔴';
+        option.textContent = `${statusIcon} ${doctorName}`;
+        
+        option.setAttribute('data-doctor-id', doctor.id);
+        option.setAttribute('data-status', doctor.availability.status);
+        select.appendChild(option);
+    });
+    
+    if (currentValue && currentValue !== '') {
+        const optionExists = Array.from(select.options).some(opt => opt.value === currentValue);
+        if (optionExists) {
+            select.value = currentValue;
+        } else if (lastSelectedDoctor && lastSelectedDoctor !== '') {
+            const lastOptionExists = Array.from(select.options).some(opt => opt.value === lastSelectedDoctor);
+            if (lastOptionExists) {
+                select.value = lastSelectedDoctor;
+            }
+        }
+    }
+}
+
+function updateDoctorStatusMessage() {
+    const select = document.getElementById('doctorSelect');
+    const selectedOption = select.options[select.selectedIndex];
+    const messageDiv = document.getElementById('doctorStatusMessage');
+    const bookBtn = document.getElementById('bookBtn');
+    
+    if (selectedOption && selectedOption.value) {
+        const doctorName = selectedOption.value;
+        const doctor = allDoctors.find(d => `Dr. ${d.firstName} ${d.lastName} (${d.specialization})` === doctorName);
+        
+        if (doctor) {
+            const availability = doctorAvailability[doctor.id] || doctor.availability;
+            
+            if (availability.status === 'online') {
+                messageDiv.innerHTML = `<div class="doctor-status status-online">
+                    <span class="online-dot online"></span>
+                    🟢 Doctor is ONLINE - ${availability.message}
+                </div>`;
+                bookBtn.disabled = false;
+            } else {
+                messageDiv.innerHTML = `<div class="doctor-status status-offline">
+                    <span class="online-dot offline"></span>
+                    🔴 Doctor is OFFLINE - ${availability.message}
+                </div>`;
+                bookBtn.disabled = true;
+            }
+        }
+    } else {
+        messageDiv.innerHTML = '';
+        bookBtn.disabled = true;
+    }
+}
+
+async function refreshDoctorAvailability(keepSelection = true) {
+    const doctorSelect = document.getElementById('doctorSelect');
+    let currentSelection = null;
+    
+    if (keepSelection && doctorSelect) {
+        currentSelection = doctorSelect.value;
+    }
+    
+    for (const doctor of allDoctors) {
+        const availabilityRef = doc(db, "doctorAvailability", doctor.id);
+        const availabilitySnap = await getDoc(availabilityRef);
+        
+        if (availabilitySnap.exists()) {
+            const savedAvail = availabilitySnap.data();
+            const currentDay = getCurrentDayName();
+            const todaySchedule = savedAvail[currentDay];
+            const currentTime = getCurrentTime();
+            
+            if (todaySchedule && todaySchedule.enabled && 
+                currentTime >= todaySchedule.start && 
+                currentTime <= todaySchedule.end) {
+                doctorAvailability[doctor.id] = { 
+                    status: 'online', 
+                    message: `Online (${todaySchedule.start} - ${todaySchedule.end})` 
+                };
+            } else if (todaySchedule && todaySchedule.enabled) {
+                doctorAvailability[doctor.id] = { 
+                    status: 'offline', 
+                    message: `Will be online at ${todaySchedule.start}` 
+                };
+            } else {
+                doctorAvailability[doctor.id] = { 
+                    status: 'offline', 
+                    message: 'Not accepting appointments today' 
+                };
+            }
+        } else {
+            doctorAvailability[doctor.id] = { 
+                status: 'offline', 
+                message: 'Availability not configured' 
+            };
+        }
+    }
+    
+    populateDoctorSelect();
+    
+    if (keepSelection && currentSelection) {
+        const select = document.getElementById('doctorSelect');
+        const optionExists = Array.from(select.options).some(opt => opt.value === currentSelection);
+        if (optionExists) {
+            select.value = currentSelection;
+            lastSelectedDoctor = currentSelection;
+        } else if (lastSelectedDoctor) {
+            const lastOptionExists = Array.from(select.options).some(opt => opt.value === lastSelectedDoctor);
+            if (lastOptionExists) {
+                select.value = lastSelectedDoctor;
+            }
+        }
+    }
+    
+    updateDoctorStatusMessage();
+    renderGlobalQueueStatus();
+}
+
+function generatePrescription(symptoms, doctorName, patientName, appointmentDate) {
+    const s = symptoms.toLowerCase();
+    let medicines = [], advice = "", followUp = "";
+    
+    if (s.includes('cough') || s.includes('cold')) {
+        medicines = ["Cheston Cold syrup (5ml thrice daily)", "Warm saline gargles", "Honey lemon tea"];
+        advice = "Take steam inhalation twice daily. Stay hydrated and rest.";
+        followUp = "Review in 3 days if symptoms persist.";
+    } else if (s.includes('fever') || s.includes('body ache')) {
+        medicines = ["Paracetamol 650mg (if fever > 100°F)", "ORS solution", "Complete bed rest"];
+        advice = "Monitor temperature every 6 hours. Stay hydrated.";
+        followUp = "Consult immediately if fever exceeds 103°F.";
+    } else if (s.includes('headache') || s.includes('migraine')) {
+        medicines = ["Ibuprofen 200mg (with food)", "Dark room rest", "Magnesium supplement"];
+        advice = "Avoid screen glare and bright lights. Practice deep breathing.";
+        followUp = "Neurology follow-up if chronic.";
+    } else if (s.includes('chest') || s.includes('breath')) {
+        medicines = ["Montelukast 10mg (evening)", "Inhaler as needed", "Nebulization if required"];
+        advice = "Monitor SpO2 levels. Avoid allergens and smoke.";
+        followUp = "Immediate medical attention if SpO2 < 94%";
+    } else {
+        medicines = ["Multivitamin daily", "Increase fluid intake", "Balanced diet"];
+        advice = "Maintain healthy lifestyle with 7-8 hours of sleep.";
+        followUp = "General wellness check in 2 weeks.";
+    }
+    
+    return { medicines, advice, followUp, generatedDate: new Date().toLocaleDateString(), doctor: doctorName, appointmentDate };
+}
+
+function showToastMessage(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.textContent = message;
+    toast.className = 'toast';
+    toast.classList.add(type);
+    setTimeout(() => toast.classList.add('show'), 10);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function setLoading(loading) {
+    document.getElementById('loaderOverlay').style.display = loading ? 'flex' : 'none';
+}
+
+async function ensureUserDocument(user) {
+    if (!user) return null;
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) {
+        await setDoc(userRef, {
+            uid: user.uid, email: user.email,
+            name: user.displayName || user.email.split('@')[0],
+            createdAt: Timestamp.now(), profileCompleted: false
+        });
+    }
+    return userRef;
+}
+
+async function loadAllAppointments() {
+    try {
+        const snapshot = await getDocs(collection(db, 'appointments'));
+        allGlobalAppointments = [];
+        snapshot.forEach(docSnap => {
+            allGlobalAppointments.push({ id: docSnap.id, ...docSnap.data() });
+        });
+    } catch (error) {
+        console.error("Error loading appointments:", error);
+    }
+}
+
+async function recalculateAllQueuesAndRefresh() {
+    const doctors = [...new Set(allGlobalAppointments.filter(a => a.status === 'active').map(a => a.doctor))];
+    
+    for (const doctor of doctors) {
+        const activeForDoctor = allGlobalAppointments.filter(a => a.status === 'active' && a.doctor === doctor);
+        activeForDoctor.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+        
+        for (let i = 0; i < activeForDoctor.length; i++) {
+            const newPosition = i + 1;
+            const newWaitTime = calculateWaitTime(newPosition);
+            
+            await updateDoc(doc(db, 'appointments', activeForDoctor[i].id), {
+                queuePosition: newPosition,
+                waitMinutes: newWaitTime,
+                lastQueueUpdate: Timestamp.now()
+            }).catch(console.error);
+            
+            const localApp = allGlobalAppointments.find(a => a.id === activeForDoctor[i].id);
+            if (localApp) {
+                localApp.queuePosition = newPosition;
+                localApp.waitMinutes = newWaitTime;
+            }
+        }
+    }
+}
+
+async function checkAndAutoComplete() {
+    if (!currentUser) return;
+    const now = Date.now();
+    let needsRefresh = false;
+    
+    for (const app of allGlobalAppointments) {
+        if (app.status === 'active') {
+            const appointmentDateTime = new Date(`${app.date}T${app.time}`).getTime();
+            const waitMinutes = app.waitMinutes || calculateWaitTime(app.queuePosition || 1);
+            const completionTime = appointmentDateTime + (waitMinutes * 60 * 1000);
+            
+            if (completionTime <= now) {
+                const prescription = generatePrescription(app.symptoms || "General", app.doctor, app.name, app.date);
+                await updateDoc(doc(db, 'appointments', app.id), {
+                    status: 'completed', prescription: prescription,
+                    completedAt: Timestamp.now(), autoCompleted: true
+                });
+                needsRefresh = true;
+            }
+        }
+    }
+    if (needsRefresh) await loadUserData();
+}
+
+async function loadUserData() {
+    if (!currentUser) return;
+    setLoading(true);
+    
+    try {
+        await ensureUserDocument(currentUser);
+        await loadAllAppointments();
+        await recalculateAllQueuesAndRefresh();
+        
+        const userApps = allGlobalAppointments.filter(a => a.userId === currentUser.uid);
+        await checkAndAutoComplete();
+        
+        const updatedUserApps = allGlobalAppointments.filter(a => a.userId === currentUser.uid);
+        const activeApps = updatedUserApps.filter(a => a.status === 'active');
+        const completedApps = updatedUserApps.filter(a => a.status === 'completed');
+        const cancelledApps = updatedUserApps.filter(a => a.status === 'cancelled');
+        const withPrescriptions = completedApps.filter(a => a.prescription);
+        
+        document.getElementById('activeCount').innerText = activeApps.length;
+        document.getElementById('completedCount').innerText = completedApps.length;
+        document.getElementById('rxCount').innerText = withPrescriptions.length;
+        
+        renderGlobalQueueStatus();
+        renderActiveAppointments(activeApps);
+        renderHistory([...completedApps, ...cancelledApps]);
+        renderPrescriptions(withPrescriptions);
+        startCountdowns(activeApps);
+        startLiveQueueCountdowns();
+        
+    } catch (error) {
+        console.error("Error loading data:", error);
+        showToastMessage("Error loading data: " + error.message, 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+function renderGlobalQueueStatus() {
+    const container = document.getElementById('globalQueueStatus');
+    const activeAppointments = allGlobalAppointments.filter(a => a.status === 'active');
+    const doctors = [...new Set(activeAppointments.map(a => a.doctor))];
+    
+    if (doctors.length === 0) {
+        container.innerHTML = '<div class="empty-state">No active appointments in queue</div>';
+        return;
+    }
+    
+    let html = '<div class="doctor-queue-header">📊 Real-time Queue Status Across All Doctors</div>';
+    
+    for (const doctor of doctors) {
+        const doctorApps = activeAppointments.filter(a => a.doctor === doctor);
+        doctorApps.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+        
+        const doctorObj = allDoctors.find(d => `Dr. ${d.firstName} ${d.lastName} (${d.specialization})` === doctor);
+        const statusIcon = doctorObj && doctorAvailability[doctorObj.id]?.status === 'online' ? '🟢' : '🔴';
+        
+        html += `<div style="margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 10px;">
+            <strong>${statusIcon} ${doctor}</strong>
+            <div style="margin-top: 5px;">`;
+        
+        doctorApps.forEach((app, idx) => {
+            const waitMins = app.waitMinutes || calculateWaitTime(idx + 1);
+            const formattedWait = formatWaitTime(waitMins);
+            const appointmentTime = new Date(`${app.date}T${app.time}`).getTime();
+            const waitUntilTime = appointmentTime + (waitMins * 60 * 1000);
+            
+            html += `
+                <div class="queue-row" data-app-id="${app.id}" data-wait-until="${waitUntilTime}">
+                    <span class="queue-patient">${idx + 1}. ${escapeHtml(app.name)}</span>
+                    <span class="queue-time">📅 ${app.date} ${app.time}</span>
+                    <span class="queue-wait">
+                        <span class="queue-badge">⏰ Wait: ${formattedWait}</span>
+                        <span id="live-countdown-${app.id}" class="live-countdown">...</span>
+                    </span>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+    container.innerHTML = html;
+}
+
+function startLiveQueueCountdowns() {
+    Object.keys(liveQueueIntervals).forEach(key => clearInterval(liveQueueIntervals[key]));
+    liveQueueIntervals = {};
+    
+    const activeAppointments = allGlobalAppointments.filter(a => a.status === 'active');
+    
+    activeAppointments.forEach(app => {
+        const appointmentDateTime = new Date(`${app.date}T${app.time}`).getTime();
+        const waitMinutes = app.waitMinutes || calculateWaitTime(app.queuePosition || 1);
+        const completionTime = appointmentDateTime + (waitMinutes * 60 * 1000);
+        
+        const updateLiveDisplay = () => {
+            const element = document.getElementById(`live-countdown-${app.id}`);
+            if (!element) return;
+            const timeLeft = completionTime - Date.now();
+            if (timeLeft <= 0) {
+                element.innerHTML = "✅ Ready";
+                element.style.color = "#27ae60";
+            } else {
+                const formatted = formatCountdown(timeLeft);
+                element.innerHTML = `⏱️ ${formatted}`;
+            }
+        };
+        updateLiveDisplay();
+        liveQueueIntervals[app.id] = setInterval(updateLiveDisplay, 1000);
+    });
+}
+
+function renderActiveAppointments(activeApps) {
+    const container = document.getElementById('activeAppointmentsList');
+    if (activeApps.length === 0) {
+        container.innerHTML = '<div class="empty-state">✅ No active appointments</div>';
+        return;
+    }
+    
+    const sortedApps = [...activeApps].sort((a, b) => (a.queuePosition || 999) - (b.queuePosition || 999));
+    
+    container.innerHTML = sortedApps.map(app => {
+        const queuePos = app.queuePosition || 1;
+        const waitMins = app.waitMinutes || calculateWaitTime(queuePos);
+        const formattedWait = formatWaitTime(waitMins);
+        
+        return `
+            <div class="appointment-item" data-app-id="${app.id}">
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                    <strong>${escapeHtml(app.name)}</strong>
+                    <span class="queue-badge">Queue #${queuePos}</span>
+                </div>
+                <div style="margin: 8px 0;">
+                    <small>👨‍⚕️ ${escapeHtml(app.doctor)}</small><br>
+                    <small>📅 ${app.date} at ${app.time}</small>
+                    ${app.rescheduledAt ? '<small><span class="status-badge" style="background:#ffc107;">🔄 Rescheduled</span></small>' : ''}
+                    <small>💬 ${escapeHtml(app.symptoms?.substring(0, 60) || 'No symptoms')}</small>
+                </div>
+                <div class="waiting-indicator">
+                    <strong>⏰ Estimated Wait:</strong> ${formattedWait}<br>
+                    <strong>${queuePos === 1 ? '👑 First in queue' : `📌 Position ${queuePos}`}</strong><br>
+                    <span id="countdown-${app.id}" class="countdown-timer">⏳ Calculating...</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="reschedule-btn" onclick='openRescheduleModalForApp("${app.id}")'>🔄 Reschedule</button>
+                    <button class="cancel-btn" onclick="cancelAppointment('${app.id}')">❌ Cancel</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function startCountdowns(activeApps) {
+    Object.keys(countdownIntervals).forEach(key => clearInterval(countdownIntervals[key]));
+    countdownIntervals = {};
+    
+    activeApps.forEach(app => {
+        const appointmentDateTime = new Date(`${app.date}T${app.time}`).getTime();
+        const waitMinutes = app.waitMinutes || calculateWaitTime(app.queuePosition || 1);
+        const completionTime = appointmentDateTime + (waitMinutes * 60 * 1000);
+        
+        const updateDisplay = () => {
+            const element = document.getElementById(`countdown-${app.id}`);
+            if (!element) return;
+            const timeLeft = completionTime - Date.now();
+            if (timeLeft <= 0) {
+                element.innerHTML = "✅ Complete!";
+                element.style.color = "#27ae60";
+            } else {
+                const formatted = formatCountdown(timeLeft);
+                element.innerHTML = `⏳ ${formatted}`;
+            }
+        };
+        updateDisplay();
+        countdownIntervals[app.id] = setInterval(updateDisplay, 1000);
+    });
+}
+
+function renderHistory(pastApps) {
+    const container = document.getElementById('historyList');
+    if (pastApps.length === 0) {
+        container.innerHTML = '<div class="empty-state">📭 No appointment history</div>';
+        return;
+    }
+    container.innerHTML = pastApps.slice(0, 15).map(app => `
+        <div class="appointment-item" style="border-left-color: ${app.status === 'completed' ? '#27ae60' : '#e74c3c'};">
+            <strong>${escapeHtml(app.name)}</strong>
+            <span style="float: right;">${app.status === 'completed' ? '✅ Completed' : '❌ Cancelled'}</span>
+            <div><small>${escapeHtml(app.doctor)} | ${app.date} at ${app.time}</small></div>
+            ${app.rescheduledAt ? '<small>🔄 Was rescheduled</small>' : ''}
+        </div>
+    `).join('');
+}
+
+function renderPrescriptions(withRx) {
+    const container = document.getElementById('prescriptionsList');
+    if (withRx.length === 0) {
+        container.innerHTML = '<div class="empty-state">💊 Complete appointments to get AI prescriptions</div>';
+        return;
+    }
+    container.innerHTML = withRx.map(app => {
+        const rx = app.prescription;
+        return `
+            <div class="prescription-item">
+                <strong>${escapeHtml(app.name)}</strong> - ${app.date}
+                <div>💊 ${rx.medicines.join(' • ')}</div>
+                <div>📋 ${escapeHtml(rx.advice)}</div>
+                <small>🔔 ${rx.followUp}</small>
+            </div>
+        `;
+    }).join('');
+}
+
+window.openRescheduleModalForApp = async (appointmentId) => {
+    await loadAllAppointments();
+    const appointment = allGlobalAppointments.find(a => a.id === appointmentId);
+    if (!appointment) {
+        showToastMessage("Appointment not found", 'error');
+        return;
+    }
+    appointmentToReschedule = appointment;
+    document.getElementById('rescheduleAppName').innerHTML = `<strong>${escapeHtml(appointment.name)}</strong><br>Current: ${appointment.date} at ${appointment.time}`;
+    document.getElementById('rescheduleDate').value = appointment.date;
+    document.getElementById('rescheduleTime').value = appointment.time;
+    document.getElementById('rescheduleModal').style.display = 'flex';
+};
+
+window.closeRescheduleModal = () => {
+    document.getElementById('rescheduleModal').style.display = 'none';
+    appointmentToReschedule = null;
+};
+
+window.confirmReschedule = async () => {
+    if (!appointmentToReschedule) {
+        showToastMessage("No appointment selected", 'error');
+        return;
+    }
+    
+    const newDate = document.getElementById('rescheduleDate').value;
+    const newTime = document.getElementById('rescheduleTime').value;
+    
+    if (!newDate || !newTime) {
+        showToastMessage("Please select new date and time", 'error');
+        return;
+    }
+    
+    setLoading(true);
+    
+    try {
+        const appointmentRef = doc(db, 'appointments', appointmentToReschedule.id);
+        
+        await updateDoc(appointmentRef, {
+            date: newDate, time: newTime,
+            rescheduledAt: Timestamp.now(),
+            previousDate: appointmentToReschedule.date,
+            previousTime: appointmentToReschedule.time,
+            queuePosition: null, waitMinutes: null, lastQueueUpdate: null
+        });
+        
+        showToastMessage(`📅 Appointment updated to ${newDate} at ${newTime}`, 'info');
+        closeRescheduleModal();
+        
+        await loadAllAppointments();
+        await recalculateAllQueuesAndRefresh();
+        await loadUserData();
+        
+        showToastMessage(`✅ Appointment rescheduled successfully!`, 'success');
+        
+    } catch (error) {
+        console.error("Reschedule error:", error);
+        showToastMessage("Error rescheduling: " + error.message, 'error');
+    } finally {
+        setLoading(false);
+    }
+};
+
+window.cancelAppointment = async (appointmentId) => {
+    if (confirm("Are you sure you want to cancel this appointment?")) {
+        setLoading(true);
+        try {
+            await updateDoc(doc(db, 'appointments', appointmentId), {
+                status: 'cancelled', cancelledAt: Timestamp.now()
+            });
+            showToastMessage("❌ Appointment cancelled", 'info');
+            await loadAllAppointments();
+            await recalculateAllQueuesAndRefresh();
+            await loadUserData();
+        } catch (error) {
+            showToastMessage("Error cancelling: " + error.message, 'error');
+        } finally {
+            setLoading(false);
+        }
+    }
+};
+
+async function bookAppointment(event) {
+    event.preventDefault();
+    if (!currentUser) { 
+        showToastMessage("Please login first", 'error'); 
+        return; 
+    }
+    
+    const name = document.getElementById('patientName').value.trim();
+    const email = document.getElementById('patientEmail').value.trim();
+    const phone = document.getElementById('patientPhone').value.trim();
+    const doctor = document.getElementById('doctorSelect').value;
+    const date = document.getElementById('appointmentDate').value;
+    const time = document.getElementById('appointmentTime').value;
+    const quickSym = document.getElementById('symptomSelect').value;
+    const symptomsDetail = document.getElementById('symptomsDetail').value.trim();
+    
+    if (!name || !email || !doctor || !date || !time) {
+        showToastMessage("Please fill all required fields", 'error');
+        return;
+    }
+    
+    const selectedDoctor = allDoctors.find(d => `Dr. ${d.firstName} ${d.lastName} (${d.specialization})` === doctor);
+    if (!selectedDoctor) {
+        showToastMessage("Selected doctor not found", 'error');
+        return;
+    }
+    
+    if (doctorAvailability[selectedDoctor.id]?.status !== 'online') {
+        showToastMessage("Cannot book appointment - Doctor is currently offline", 'error');
+        return;
+    }
+    
+    // Check if the appointment time is within doctor's working hours
+    const timeValidation = await isAppointmentTimeValid(selectedDoctor.id, date, time);
+    if (!timeValidation.valid) {
+        showToastMessage(timeValidation.message, 'error');
+        return;
+    }
+    
+    const phoneClean = phone.replace(/\D/g, '');
+    if (phoneClean.length !== 10 && phoneClean.length > 0) {
+        showToastMessage("Phone number must be 10 digits", 'error');
+        return;
+    }
+    
+    const symptoms = symptomsDetail || quickSym || "General checkup";
+    setLoading(true);
+    
+    try {
+        await ensureUserDocument(currentUser);
+        await loadAllAppointments();
+        
+        const activeForDoctor = allGlobalAppointments.filter(a => a.status === 'active' && a.doctor === doctor);
+        activeForDoctor.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+        
+        const newPosition = activeForDoctor.length + 1;
+        const waitTime = calculateWaitTime(newPosition);
+        const formattedWait = formatWaitTime(waitTime);
+        
+        await addDoc(collection(db, 'appointments'), {
+            userId: currentUser.uid, name, email, 
+            phone: phoneClean ? "+91 " + phoneClean : "",
+            doctor, date, time, symptoms, 
+            status: 'active', createdAt: Timestamp.now(),
+            queuePosition: newPosition, waitMinutes: waitTime
+        });
+        
+        showToastMessage(`✅ Booked! Queue #${newPosition} for ${doctor}. Wait: ${formattedWait}`, 'success');
+        
+        document.getElementById('bookingForm').reset();
+        document.getElementById('patientEmail').value = currentUser.email;
+        
+        await loadAllAppointments();
+        await recalculateAllQueuesAndRefresh();
+        await loadUserData();
+        
+    } catch (error) {
+        console.error("Booking error:", error);
+        showToastMessage("Error: " + error.message, 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+function escapeHtml(str) { 
+    if (!str) return ''; 
+    return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); 
+}
+
+window.refreshData = async () => { 
+    await refreshDoctorAvailability(true);
+    await loadAllAppointments();
+    await recalculateAllQueuesAndRefresh();
+    await loadUserData(); 
+    showToastMessage("Data refreshed!", 'info'); 
+};
+
+window.manualRefreshWithPreserve = async () => {
+    showToastMessage("Manually refreshing data...", 'info');
+    await refreshDoctorAvailability(true);
+    await loadAllAppointments();
+    await recalculateAllQueuesAndRefresh();
+    await loadUserData();
+    showToastMessage("Data refreshed successfully!", 'success');
+};
+
+function setRefreshDelay(seconds) {
+    refreshDelay = seconds * 1000;
+    showToastMessage(`Refresh delay set to ${seconds} seconds`, 'info');
+    
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = setInterval(() => { 
+            if (currentUser) {
+                refreshDoctorAvailability(true);
+                loadAllAppointments();
+                recalculateAllQueuesAndRefresh();
+                loadUserData();
+            } 
+        }, refreshDelay);
+    }
+    
+    startRefreshCountdown();
+}
+
+window.applyRefreshDelay = () => {
+    const select = document.getElementById('refreshDelaySelect');
+    if (select) {
+        const seconds = parseInt(select.value);
+        setRefreshDelay(seconds);
+    }
+};
+
+function startRefreshCountdown() {
+    if (countdownTimerInterval) clearInterval(countdownTimerInterval);
+    
+    let timeLeft = refreshDelay / 1000;
+    const countdownElement = document.getElementById('nextRefreshCountdown');
+    
+    if (!countdownElement) return;
+    
+    countdownTimerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+            timeLeft = refreshDelay / 1000;
+            if (countdownElement) countdownElement.textContent = `Next refresh in: 0s (refreshing...)`;
+        } else {
+            if (countdownElement) countdownElement.textContent = `Next refresh in: ${timeLeft}s`;
+            timeLeft--;
+        }
+    }, 1000);
+}
+
+window.handleLogout = async () => {
+    if (doctorStatusInterval) clearInterval(doctorStatusInterval);
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    if (countdownTimerInterval) clearInterval(countdownTimerInterval);
+    Object.keys(countdownIntervals).forEach(key => clearInterval(countdownIntervals[key]));
+    Object.keys(liveQueueIntervals).forEach(key => clearInterval(liveQueueIntervals[key]));
+    await signOut(auth);
+    showToastMessage("Logged out", 'success');
+    setTimeout(() => window.location.href = "login.html", 1000);
+};
+
+document.getElementById('symptomSelect')?.addEventListener('change', (e) => {
+    if (e.target.value) document.getElementById('symptomsDetail').value = e.target.value;
+});
+document.getElementById('bookingForm')?.addEventListener('submit', bookAppointment);
+document.getElementById('doctorSelect')?.addEventListener('change', (e) => {
+    if (e.target.value) {
+        lastSelectedDoctor = e.target.value;
+    }
+    updateDoctorStatusMessage();
+});
+
+autoRefreshInterval = setInterval(() => { 
+    if (currentUser) {
+        refreshDoctorAvailability(true);
+        loadAllAppointments();
+        recalculateAllQueuesAndRefresh();
+        loadUserData();
+    } 
+}, refreshDelay);
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        document.getElementById('patientEmail').value = user.email;
+        document.getElementById('userName').innerHTML = `👋 ${escapeHtml(user.email.split('@')[0])}`;
+        await loadDoctors();
+        await refreshDoctorAvailability(true);
+        await loadAllAppointments();
+        await recalculateAllQueuesAndRefresh();
+        await loadUserData();
+        
+        if (doctorStatusInterval) clearInterval(doctorStatusInterval);
+        doctorStatusInterval = setInterval(() => refreshDoctorAvailability(true), 10000);
+        
+        startRefreshCountdown();
+    } else {
+        window.location.href = "login.html";
+    }
+});
+</script>
+
+</body>
+</html>

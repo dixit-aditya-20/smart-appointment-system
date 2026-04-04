@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Lifeline Health AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .edit-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            color: #1aa6a6;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .form-section h3 {
+            color: #1aa6a6;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e44;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #1aa6a6, #0f8a8a);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .add-btn {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .toast.error {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div class="edit-container">
+    <h2>🏥 Edit Your Health Profile</h2>
+    
+    <form id="profileForm">
+        <div class="form-section">
+            <h3>📋 Personal Information</h3>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" id="dob">
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="gender">
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Blood Group</label>
+                <select id="bloodGroup">
+                    <option value="">Select</option>
+                    <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                    <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Emergency Contact</label>
+                <input type="text" id="emergencyContact" placeholder="Name and Phone number">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>📏 Physical Measurements</h3>
+            <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" id="height" step="1">
+            </div>
+            <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" id="weight" step="0.1">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>🩺 Vital Signs (Optional)</h3>
+            <div class="form-group">
+                <label>Blood Pressure (e.g., 120/80)</label>
+                <input type="text" id="bloodPressure" placeholder="120/80">
+            </div>
+            <div class="form-group">
+                <label>Heart Rate (bpm)</label>
+                <input type="number" id="heartRate">
+            </div>
+            <div class="form-group">
+                <label>Temperature (°F)</label>
+                <input type="number" id="temperature" step="0.1">
+            </div>
+            <div class="form-group">
+                <label>Blood Sugar (mg/dL)</label>
+                <input type="number" id="bloodSugar">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>⚠️ Allergies</h3>
+            <div id="allergiesContainer"></div>
+            <button type="button" class="add-btn" onclick="addAllergy()">+ Add Allergy</button>
+        </div>
+
+        <div class="form-section">
+            <h3>💊 Current Medications</h3>
+            <div id="medicationsContainer"></div>
+            <button type="button" class="add-btn" onclick="addMedication()">+ Add Medication</button>
+        </div>
+
+        <div class="form-section">
+            <h3>📜 Medical History</h3>
+            <div id="medicalHistoryContainer"></div>
+            <button type="button" class="add-btn" onclick="addMedicalCondition()">+ Add Medical Condition</button>
+        </div>
+
+        <button type="submit">💾 Save Profile</button>
+    </form>
+</div>
+
+<script type="module">
+import { auth, db, getPatientProfile, updatePatientProfile } from "../js/firebase.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+let currentUser = null;
+let allergies = [];
+let medications = [];
+let medicalHistory = [];
+let toastTimeout = null;
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toast.classList.remove('show');
+    toast.textContent = message;
+    toast.className = 'toast';
+    toast.classList.add(type);
+    setTimeout(() => toast.classList.add('show'), 10);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+window.addAllergy = () => {
+    const container = document.getElementById('allergiesContainer');
+    const index = allergies.length;
+    allergies.push('');
+    const div = document.createElement('div');
+    div.className = 'form-group';
+    div.innerHTML = `
+        <input type="text" placeholder="Allergy (e.g., Penicillin, Peanuts)" 
+               onchange="updateAllergy(${index}, this.value)">
+        <button type="button" onclick="removeAllergy(${index})" style="margin-top:5px; background:#e74c3c;">Remove</button>
+    `;
+    container.appendChild(div);
+};
+
+window.updateAllergy = (index, value) => {
+    allergies[index] = value;
+};
+
+window.removeAllergy = (index) => {
+    allergies.splice(index, 1);
+    renderAllergies();
+};
+
+function renderAllergies() {
+    const container = document.getElementById('allergiesContainer');
+    container.innerHTML = '';
+    allergies.forEach((allergy, idx) => {
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.innerHTML = `
+            <input type="text" value="${escapeHtml(allergy)}" 
+                   onchange="updateAllergy(${idx}, this.value)">
+            <button type="button" onclick="removeAllergy(${idx})" style="margin-top:5px; background:#e74c3c;">Remove</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+window.addMedication = () => {
+    medications.push({ name: '', dosage: '', frequency: '' });
+    renderMedications();
+};
+
+window.updateMedication = (index, field, value) => {
+    medications[index][field] = value;
+};
+
+window.removeMedication = (index) => {
+    medications.splice(index, 1);
+    renderMedications();
+};
+
+function renderMedications() {
+    const container = document.getElementById('medicationsContainer');
+    container.innerHTML = '';
+    medications.forEach((med, idx) => {
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.style.border = '1px solid #ddd';
+        div.style.padding = '10px';
+        div.style.marginBottom = '10px';
+        div.style.borderRadius = '8px';
+        div.innerHTML = `
+            <input type="text" placeholder="Medication Name" value="${escapeHtml(med.name)}" 
+                   onchange="updateMedication(${idx}, 'name', this.value)" style="margin-bottom:5px;">
+            <input type="text" placeholder="Dosage (e.g., 500mg)" value="${escapeHtml(med.dosage)}" 
+                   onchange="updateMedication(${idx}, 'dosage', this.value)" style="margin-bottom:5px;">
+            <input type="text" placeholder="Frequency (e.g., Twice daily)" value="${escapeHtml(med.frequency)}" 
+                   onchange="updateMedication(${idx}, 'frequency', this.value)" style="margin-bottom:5px;">
+            <button type="button" onclick="removeMedication(${idx})" style="background:#e74c3c;">Remove</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+window.addMedicalCondition = () => {
+    medicalHistory.push({ condition: '', diagnosedDate: '', status: 'Active' });
+    renderMedicalHistory();
+};
+
+window.updateMedicalCondition = (index, field, value) => {
+    medicalHistory[index][field] = value;
+};
+
+window.removeMedicalCondition = (index) => {
+    medicalHistory.splice(index, 1);
+    renderMedicalHistory();
+};
+
+function renderMedicalHistory() {
+    const container = document.getElementById('medicalHistoryContainer');
+    container.innerHTML = '';
+    medicalHistory.forEach((record, idx) => {
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.style.border = '1px solid #ddd';
+        div.style.padding = '10px';
+        div.style.marginBottom = '10px';
+        div.style.borderRadius = '8px';
+        div.innerHTML = `
+            <input type="text" placeholder="Condition (e.g., Diabetes)" value="${escapeHtml(record.condition)}" 
+                   onchange="updateMedicalCondition(${idx}, 'condition', this.value)" style="margin-bottom:5px;">
+            <input type="date" placeholder="Diagnosed Date" value="${record.diagnosedDate}" 
+                   onchange="updateMedicalCondition(${idx}, 'diagnosedDate', this.value)" style="margin-bottom:5px;">
+            <select onchange="updateMedicalCondition(${idx}, 'status', this.value)" style="margin-bottom:5px;">
+                <option value="Active" ${record.status === 'Active' ? 'selected' : ''}>Active</option>
+                <option value="Resolved" ${record.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                <option value="Chronic" ${record.status === 'Chronic' ? 'selected' : ''}>Chronic</option>
+            </select>
+            <button type="button" onclick="removeMedicalCondition(${idx})" style="background:#e74c3c;">Remove</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+async function loadExistingProfile() {
+    if (!currentUser) return;
+    
+    try {
+        const patientProfile = await getPatientProfile(currentUser.uid);
+        
+        if (patientProfile) {
+            document.getElementById('name').value = patientProfile.name || '';
+            document.getElementById('dob').value = patientProfile.dob || '';
+            document.getElementById('gender').value = patientProfile.gender || '';
+            document.getElementById('bloodGroup').value = patientProfile.bloodGroup || '';
+            document.getElementById('emergencyContact').value = patientProfile.emergencyContact || '';
+            document.getElementById('height').value = patientProfile.height || '';
+            document.getElementById('weight').value = patientProfile.weight || '';
+            document.getElementById('bloodPressure').value = patientProfile.bloodPressure || '';
+            document.getElementById('heartRate').value = patientProfile.heartRate || '';
+            document.getElementById('temperature').value = patientProfile.temperature || '';
+            document.getElementById('bloodSugar').value = patientProfile.bloodSugar || '';
+            
+            allergies = patientProfile.allergies || [];
+            medications = patientProfile.medications || [];
+            medicalHistory = patientProfile.medicalHistory || [];
+            
+            renderAllergies();
+            renderMedications();
+            renderMedicalHistory();
+        }
+    } catch (error) {
+        console.error("Error loading profile:", error);
+    }
+}
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!currentUser) {
+        showToast("Please login first", "error");
+        return;
+    }
+    
+    const profileData = {
+        name: document.getElementById('name').value,
+        dob: document.getElementById('dob').value,
+        gender: document.getElementById('gender').value,
+        bloodGroup: document.getElementById('bloodGroup').value,
+        emergencyContact: document.getElementById('emergencyContact').value,
+        height: parseInt(document.getElementById('height').value) || null,
+        weight: parseFloat(document.getElementById('weight').value) || null,
+        bloodPressure: document.getElementById('bloodPressure').value,
+        heartRate: parseInt(document.getElementById('heartRate').value) || null,
+        temperature: parseFloat(document.getElementById('temperature').value) || null,
+        bloodSugar: parseInt(document.getElementById('bloodSugar').value) || null,
+        allergies: allergies.filter(a => a.trim()),
+        medications: medications.filter(m => m.name),
+        medicalHistory: medicalHistory.filter(m => m.condition)
+    };
+    
+    const result = await updatePatientProfile(currentUser.uid, profileData);
+    
+    if (result.success) {
+        showToast("✅ Profile saved successfully!", "success");
+        setTimeout(() => {
+            window.location.href = "home.html";
+        }, 1500);
+    } else {
+        showToast("Error saving profile: " + result.error, "error");
+    }
+});
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        await loadExistingProfile();
+    } else {
+        window.location.href = "login.html";
+    }
+});
+
+// Make functions global
+window.updateAllergy = window.updateAllergy;
+window.removeAllergy = window.removeAllergy;
+window.updateMedication = window.updateMedication;
+window.removeMedication = window.removeMedication;
+window.updateMedicalCondition = window.updateMedicalCondition;
+window.removeMedicalCondition = window.removeMedicalCondition;
+</script>
+</body>
+</html>
