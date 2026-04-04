@@ -47,6 +47,14 @@
         .doctor-name {
             font-weight: 600;
             color: #2c3e44;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .doctor-name:hover {
+            background: #e0f2f1;
         }
 
         .availability-badge {
@@ -274,6 +282,14 @@
             font-size: 18px;
             font-weight: bold;
             color: #2c3e44;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .patient-name:hover {
+            background: #e0f2f1;
         }
 
         .appointment-status {
@@ -334,6 +350,16 @@
             font-weight: 600;
         }
 
+        .view-patient-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -385,6 +411,76 @@
             background-color: #e74c3c;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #1aa6a6, #0f5c5c);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            color: white;
+        }
+
+        .profile-field {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .profile-label {
+            font-weight: 600;
+            color: #1aa6a6;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .profile-value {
+            font-size: 16px;
+            color: #2c3e44;
+            margin-top: 5px;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         @media (max-width: 768px) {
             .main-grid {
                 grid-template-columns: 1fr;
@@ -401,7 +497,7 @@
 <div class="navbar">
     <div class="logo">🏥 Lifeline Doctor Portal</div>
     <div class="doctor-info">
-        <span class="doctor-name" id="doctorName">Loading...</span>
+        <span class="doctor-name" id="doctorName" onclick="viewMyProfile()">Loading...</span>
         <span class="availability-badge" id="availabilityStatus">● Checking...</span>
         <button class="logout-btn" onclick="window.handleLogout()">🚪 Logout</button>
     </div>
@@ -452,6 +548,28 @@
     </div>
 </div>
 
+<!-- Patient Profile Modal -->
+<div id="patientProfileModal" class="modal">
+    <div class="modal-content">
+        <h3 id="patientProfileTitle">👤 Patient Profile</h3>
+        <div id="patientProfileContent"></div>
+        <div class="modal-buttons" style="margin-top: 20px;">
+            <button onclick="closePatientProfileModal()" style="width: 100%; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 12px; cursor: pointer;">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Doctor Profile Modal -->
+<div id="doctorProfileModal" class="modal">
+    <div class="modal-content">
+        <h3>👨‍⚕️ My Profile</h3>
+        <div id="doctorProfileContent"></div>
+        <div class="modal-buttons" style="margin-top: 20px;">
+            <button onclick="closeDoctorProfileModal()" style="width: 100%; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 12px; cursor: pointer;">Close</button>
+        </div>
+    </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script type="module">
@@ -465,6 +583,7 @@ import {
 let currentUser = null;
 let doctorData = null;
 let allAppointments = [];
+let allPatients = new Map(); // Cache patient data
 let toastTimeout = null;
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -631,6 +750,106 @@ window.saveAvailability = async function() {
     }
 };
 
+// Function to view patient profile
+window.viewPatientProfile = async (userId) => {
+    try {
+        let patientData = allPatients.get(userId);
+        
+        if (!patientData) {
+            const userDoc = await getDoc(doc(db, 'users', userId));
+            if (userDoc.exists()) {
+                patientData = userDoc.data();
+                allPatients.set(userId, patientData);
+            } else {
+                patientData = { name: 'Unknown', email: 'N/A' };
+            }
+        }
+        
+        // Get patient's appointment history
+        const patientAppointments = allAppointments.filter(a => a.userId === userId);
+        const completedCount = patientAppointments.filter(a => a.status === 'completed').length;
+        const cancelledCount = patientAppointments.filter(a => a.status === 'cancelled').length;
+        
+        const modalContent = `
+            <div class="profile-avatar">👤</div>
+            <div class="profile-field">
+                <div class="profile-label">Full Name</div>
+                <div class="profile-value">${escapeHtml(patientData.name || patientData.firstName || 'N/A')}</div>
+            </div>
+            <div class="profile-field">
+                <div class="profile-label">Email</div>
+                <div class="profile-value">${patientData.email || 'N/A'}</div>
+            </div>
+            <div class="profile-field">
+                <div class="profile-label">Phone</div>
+                <div class="profile-value">${patientData.phone || 'Not provided'}</div>
+            </div>
+            <div class="profile-field">
+                <div class="profile-label">Member Since</div>
+                <div class="profile-value">${patientData.createdAt ? new Date(patientData.createdAt.toDate()).toLocaleDateString() : 'N/A'}</div>
+            </div>
+            <div class="profile-field">
+                <div class="profile-label">Appointment History</div>
+                <div class="profile-value">✅ Completed: ${completedCount} | ❌ Cancelled: ${cancelledCount}</div>
+            </div>
+        `;
+        
+        document.getElementById('patientProfileTitle').innerHTML = `👤 ${escapeHtml(patientData.name || 'Patient')}'s Profile`;
+        document.getElementById('patientProfileContent').innerHTML = modalContent;
+        document.getElementById('patientProfileModal').style.display = 'flex';
+    } catch (error) {
+        console.error("Error loading patient profile:", error);
+        showToast("Error loading patient profile", "error");
+    }
+};
+
+// Function to view doctor's own profile
+window.viewMyProfile = async () => {
+    if (!doctorData) {
+        showToast("Profile data not loaded", "error");
+        return;
+    }
+    
+    const modalContent = `
+        <div class="profile-avatar">👨‍⚕️</div>
+        <div class="profile-field">
+            <div class="profile-label">Full Name</div>
+            <div class="profile-value">Dr. ${doctorData.firstName || 'N/A'} ${doctorData.lastName || ''}</div>
+        </div>
+        <div class="profile-field">
+            <div class="profile-label">Specialization</div>
+            <div class="profile-value">${doctorData.specialization || 'General Physician'}</div>
+        </div>
+        <div class="profile-field">
+            <div class="profile-label">Email</div>
+            <div class="profile-value">${doctorData.email || 'N/A'}</div>
+        </div>
+        <div class="profile-field">
+            <div class="profile-label">Experience</div>
+            <div class="profile-value">${doctorData.experience || 'Not specified'} years</div>
+        </div>
+        <div class="profile-field">
+            <div class="profile-label">Qualification</div>
+            <div class="profile-value">${doctorData.qualification || 'MBBS'}</div>
+        </div>
+        <div class="profile-field">
+            <div class="profile-label">Member Since</div>
+            <div class="profile-value">${doctorData.createdAt ? new Date(doctorData.createdAt.toDate()).toLocaleDateString() : 'N/A'}</div>
+        </div>
+    `;
+    
+    document.getElementById('doctorProfileContent').innerHTML = modalContent;
+    document.getElementById('doctorProfileModal').style.display = 'flex';
+};
+
+window.closePatientProfileModal = () => {
+    document.getElementById('patientProfileModal').style.display = 'none';
+};
+
+window.closeDoctorProfileModal = () => {
+    document.getElementById('doctorProfileModal').style.display = 'none';
+};
+
 async function loadDoctorAppointments() {
     if (!currentUser || !doctorData) return;
     
@@ -645,7 +864,16 @@ async function loadDoctorAppointments() {
         
         allAppointments = [];
         snapshot.forEach(docSnap => {
-            allAppointments.push({ id: docSnap.id, ...docSnap.data() });
+            const appointment = { id: docSnap.id, ...docSnap.data() };
+            allAppointments.push(appointment);
+            
+            // Cache patient IDs for later use
+            if (appointment.userId) {
+                if (!allPatients.has(appointment.userId)) {
+                    // Will be loaded on demand when profile is viewed
+                    allPatients.set(appointment.userId, null);
+                }
+            }
         });
         
         console.log(`📊 Found ${allAppointments.length} total appointments`);
@@ -663,7 +891,10 @@ async function loadDoctorAppointments() {
         document.getElementById('activeCount').innerText = activeAppointments.length;
         document.getElementById('completedCount').innerText = completedAppointments.length;
         document.getElementById('cancelledCount').innerText = cancelledAppointments.length;
-        document.getElementById('totalPatients').innerText = completedAppointments.length + cancelledAppointments.length;
+        
+        // Calculate unique patients
+        const uniquePatients = new Set(allAppointments.map(a => a.userId).filter(id => id));
+        document.getElementById('totalPatients').innerText = uniquePatients.size;
         
         renderAppointmentList(activeAppointments, 'activeList', 'active');
         renderAppointmentList(completedAppointments, 'completedList', 'completed');
@@ -698,7 +929,7 @@ function renderAppointmentList(appointments, containerId, type) {
         return `
             <div class="appointment-item ${type}">
                 <div class="appointment-header">
-                    <span class="patient-name">👤 ${escapeHtml(app.name || 'Patient')}</span>
+                    <span class="patient-name" onclick="viewPatientProfile('${app.userId}')">👤 ${escapeHtml(app.name || 'Patient')}</span>
                     <span class="appointment-status ${statusClass}">
                         ${statusText}
                     </span>
@@ -714,6 +945,11 @@ function renderAppointmentList(appointments, containerId, type) {
                     <div class="appointment-actions">
                         <button class="complete-btn" onclick="window.completeAppointment('${app.id}')">✅ Mark as Completed</button>
                         <button class="cancel-appointment-btn" onclick="window.cancelAppointment('${app.id}')">❌ Cancel</button>
+                        <button class="view-patient-btn" onclick="viewPatientProfile('${app.userId}')">👤 View Profile</button>
+                    </div>
+                ` : type === 'completed' ? `
+                    <div class="appointment-actions">
+                        <button class="view-patient-btn" onclick="viewPatientProfile('${app.userId}')">👤 View Patient Profile</button>
                     </div>
                 ` : ''}
             </div>

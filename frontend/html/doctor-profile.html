@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Profile - Lifeline Health AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 40px 20px;
@@ -175,14 +177,43 @@
             color: white;
         }
 
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loader-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
         @media (max-width: 768px) {
             .profile-content {
                 padding: 20px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
+
+<div id="loaderOverlay" class="loader-overlay">
+    <div class="loader-spinner">
+        <div>⏳ Loading Doctor Profile...</div>
+    </div>
+</div>
 
 <div id="toast" class="toast"></div>
 
@@ -197,64 +228,67 @@
 
     <div class="profile-content">
         <div class="info-section">
-            <h3>📋 Professional Information</h3>
+            <h3><i class="fas fa-id-card"></i> Professional Information</h3>
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="info-label">🏥 Hospital/Clinic</div>
-                    <div class="info-value" id="hospital"></div>
+                    <div class="info-label"><i class="fas fa-user-md"></i> Full Name</div>
+                    <div class="info-value" id="fullName"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">📜 License Number</div>
-                    <div class="info-value" id="licenseNumber"></div>
+                    <div class="info-label"><i class="fas fa-stethoscope"></i> Specialization</div>
+                    <div class="info-value" id="specialization"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">📧 Email</div>
+                    <div class="info-label"><i class="fas fa-envelope"></i> Email</div>
                     <div class="info-value" id="doctorEmail"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">📞 Phone</div>
+                    <div class="info-label"><i class="fas fa-phone"></i> Phone</div>
                     <div class="info-value" id="doctorPhone"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">⭐ Rating</div>
-                    <div class="info-value" id="rating"></div>
+                    <div class="info-label"><i class="fas fa-graduation-cap"></i> Qualification</div>
+                    <div class="info-value" id="qualification"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">👥 Total Patients</div>
-                    <div class="info-value" id="totalPatients"></div>
+                    <div class="info-label"><i class="fas fa-briefcase"></i> Experience</div>
+                    <div class="info-value" id="experience"></div>
                 </div>
             </div>
         </div>
 
         <div class="info-section">
-            <h3>📝 Bio & Experience</h3>
+            <h3><i class="fas fa-file-alt"></i> Bio</h3>
             <p id="bio"></p>
         </div>
 
         <div class="info-section">
-            <h3>⏰ Working Schedule</h3>
-            <table class="schedule-table" id="scheduleTable">
-                <tbody></tbody>
+            <h3><i class="fas fa-clock"></i> Working Schedule</h3>
+            <table class="schedule-table">
+                <tbody id="scheduleTable"></tbody>
             </table>
         </div>
 
-        <button class="book-btn" onclick="goBackAndBook()">📅 Book Appointment with this Doctor</button>
-        <button class="book-btn back-btn" onclick="goBack()">← Back to Booking</button>
+        <button class="book-btn" onclick="bookAppointment()"><i class="fas fa-calendar-check"></i> Book Appointment with this Doctor</button>
+        <button class="book-btn back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
     </div>
 </div>
 
 <script type="module">
-import { auth, db, getDoctorProfile } from "../js/firebase.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { auth, db, USER_ROLES } from "../js/firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    doc, getDoc, collection, query, where, getDocs 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let doctorData = null;
+let doctorId = null;
 let toastTimeout = null;
 
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     if (toastTimeout) clearTimeout(toastTimeout);
     toast.classList.remove('show');
-    void toast.offsetWidth;
     toast.textContent = message;
     toast.className = 'toast';
     toast.classList.add(type);
@@ -262,52 +296,61 @@ function showToast(message, type = 'success') {
     toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+function setLoading(loading) {
+    document.getElementById('loaderOverlay').style.display = loading ? 'flex' : 'none';
+}
+
+function escapeHtml(str) {
+    if (!str) return 'Not provided';
+    return str;
+}
+
 async function loadDoctorProfile() {
     const urlParams = new URLSearchParams(window.location.search);
-    const doctorId = urlParams.get('doctorId');
-    const doctorEmail = urlParams.get('email');
+    doctorId = urlParams.get('doctorId');
     
-    if (!doctorId && !doctorEmail) {
+    if (!doctorId) {
         showToast("Doctor information not found", "error");
         return;
     }
     
+    setLoading(true);
+    
     try {
-        let doctor = null;
+        // Get doctor data from users collection
+        const doctorRef = doc(db, "users", doctorId);
+        const doctorSnap = await getDoc(doctorRef);
         
-        if (doctorId) {
-            doctor = await getDoctorProfile(doctorId);
-        } else if (doctorEmail) {
-            const usersRef = collection(db, "users");
-            const q = query(usersRef, where("email", "==", doctorEmail), where("role", "==", "doctor"));
-            const snapshot = await getDocs(q);
-            if (!snapshot.empty) {
-                doctor = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
-            }
-        }
-        
-        if (!doctor) {
+        if (!doctorSnap.exists()) {
             showToast("Doctor not found", "error");
             return;
         }
         
-        doctorData = doctor;
+        doctorData = doctorSnap.data();
         
-        document.getElementById('doctorName').textContent = `Dr. ${doctor.firstName} ${doctor.lastName}`;
-        document.getElementById('doctorSpecialty').textContent = doctor.specialization || 'General Physician';
-        document.getElementById('hospital').textContent = doctor.hospital || 'Private Practice';
-        document.getElementById('licenseNumber').textContent = doctor.licenseNumber || 'Not provided';
-        document.getElementById('doctorEmail').textContent = doctor.email;
-        document.getElementById('doctorPhone').textContent = doctor.phone || 'Not provided';
-        document.getElementById('rating').textContent = `${doctor.rating || 0} ★ (${doctor.totalReviews || 0} reviews)`;
-        document.getElementById('totalPatients').textContent = doctor.totalPatients || 0;
-        document.getElementById('bio').textContent = doctor.bio || 'Experienced healthcare professional dedicated to patient care.';
+        // Check if the user is actually a doctor
+        if (doctorData.role !== USER_ROLES.DOCTOR) {
+            showToast("Invalid doctor profile", "error");
+            return;
+        }
         
-        // Load availability
-        const availabilityRef = doc(db, "doctorAvailability", doctor.id);
+        // Populate doctor information
+        const fullName = `Dr. ${doctorData.firstName || ''} ${doctorData.lastName || ''}`;
+        document.getElementById('doctorName').textContent = fullName;
+        document.getElementById('fullName').textContent = fullName;
+        document.getElementById('specialization').textContent = doctorData.specialization || 'General Physician';
+        document.getElementById('doctorSpecialty').textContent = doctorData.specialization || 'General Physician';
+        document.getElementById('doctorEmail').textContent = doctorData.email || 'Not provided';
+        document.getElementById('doctorPhone').textContent = doctorData.phone || 'Not provided';
+        document.getElementById('qualification').textContent = doctorData.qualification || 'MBBS';
+        document.getElementById('experience').textContent = doctorData.experience ? `${doctorData.experience} years` : 'Not specified';
+        document.getElementById('bio').textContent = doctorData.bio || 'Experienced healthcare professional dedicated to providing quality patient care.';
+        
+        // Load doctor availability
+        const availabilityRef = doc(db, "doctorAvailability", doctorId);
         const availabilitySnap = await getDoc(availabilityRef);
         
-        const scheduleBody = document.getElementById('scheduleTable').querySelector('tbody');
+        const scheduleBody = document.getElementById('scheduleTable');
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
         
         if (availabilitySnap.exists()) {
@@ -316,35 +359,48 @@ async function loadDoctorProfile() {
                 const schedule = availability[day];
                 const isAvailable = schedule && schedule.enabled;
                 const hours = isAvailable ? `${schedule.start} - ${schedule.end}` : 'Not working';
+                const statusClass = isAvailable ? 'available' : 'unavailable';
                 return `
                     <tr>
                         <td>${day}</td>
-                        <td class="${isAvailable ? 'available' : 'unavailable'}">${hours}</td>
+                        <td class="${statusClass}">${hours}</td>
                     </tr>
                 `;
             }).join('');
         } else {
-            scheduleBody.innerHTML = days.map(day => `
-                <tr>
-                    <td>${day}</td>
-                    <td class="available">09:00 - 17:00</td>
-                </tr>
-            `).join('');
+            // Default availability if not set
+            scheduleBody.innerHTML = days.map(day => {
+                const isWeekend = day === 'Saturday' || day === 'Sunday';
+                return `
+                    <tr>
+                        <td>${day}</td>
+                        <td class="${isWeekend ? 'unavailable' : 'available'}">
+                            ${isWeekend ? 'Not working' : '09:00 - 17:00'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
         
     } catch (error) {
         console.error("Error loading doctor profile:", error);
-        showToast("Error loading profile", "error");
+        showToast("Error loading profile: " + error.message, "error");
+    } finally {
+        setLoading(false);
     }
 }
 
-window.goBackAndBook = () => {
+window.bookAppointment = () => {
     if (doctorData) {
+        // Store selected doctor in localStorage to pre-select in home page
+        const doctorName = `Dr. ${doctorData.firstName} ${doctorData.lastName} (${doctorData.specialization || 'General'})`;
         localStorage.setItem('selectedDoctor', JSON.stringify({
-            name: `Dr. ${doctorData.firstName} ${doctorData.lastName} (${doctorData.specialization})`,
-            id: doctorData.id
+            name: doctorName,
+            id: doctorId
         }));
         window.location.href = "home.html";
+    } else {
+        showToast("Doctor data not available", "error");
     }
 };
 
@@ -352,7 +408,14 @@ window.goBack = () => {
     window.location.href = "home.html";
 };
 
-loadDoctorProfile();
+// Check authentication
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await loadDoctorProfile();
+    } else {
+        window.location.href = "login.html";
+    }
+});
 </script>
 </body>
 </html>
